@@ -1,0 +1,62 @@
+/* Ported verbatim from the earwrm Claude Design prototype (helmet block). */
+:root {
+  --bg: #0a0a0b;          /* app surface */
+  --page: #0d0d0f;        /* area around the app column on wide screens */
+  --sheet: #131316;
+  --modal: #17171b;
+  --accent: #8f6bf0;      /* purple, solid fills */
+  --accent-lt: #a88bf5;   /* purple, stars + icons */
+  --accent-link: #b79bff;
+  --accent-link-hi: #d3c2ff;
+  --danger: #e06b6b;
+  --danger-fg: #1a0d0d;
+  --safe-b: max(24px, env(safe-area-inset-bottom, 0px));
+}
+
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--page);
+  font-family: 'Archivo', system-ui, sans-serif;
+  color: #fff;
+}
+
+a { color: var(--accent-link); text-decoration: none; }
+a:hover { color: var(--accent-link-hi); }
+
+input, textarea, button { font: inherit; color: inherit; background: none; border: none; outline: none; padding: 0; margin: 0; }
+button { cursor: pointer; }
+
+::placeholder { color: rgba(255, 255, 255, .28); }
+::-webkit-scrollbar { width: 0; height: 0; }
+
+@keyframes upIn { from { transform: translateY(14px); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+
+/* The prototype renders inside a 402x874 iOS device frame. On the web the app
+   fills the viewport on phones and sits in a device-width column on wider
+   screens, which is the same thing the prototype's frame was standing in for. */
+.app-shell {
+  position: relative;
+  width: 100%;
+  max-width: 402px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 480px) {
+  .app-shell {
+    height: 874px;
+    min-height: 0;
+    margin-top: max(0px, calc((100dvh - 874px) / 2));
+    border-radius: 14px;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, .35), 0 0 0 1px rgba(255, 255, 255, .06);
+  }
+}
