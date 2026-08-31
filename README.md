@@ -1,9 +1,11 @@
 # earwrm
+try it at https://earwrm-xi.vercel.app/
 
 A Letterboxd-style music diary. Log what you played, rate it out of five, write a
-line about it, keep lists and a queue of what's next.
+line about it, keep lists and a queue of what's next. 
+A long-time dream project sprinted over a weekend into a prototype.
 
-Built from the [Claude Design prototype](https://claude.ai/design/p/24c9a130-b402-40fa-aa9a-eb0ec240ecf2).
+Built from a Claude Design prototype. Prototype design viewable at earwrmDesign.pdf
 This is a personal-use prototype, not production code.
 
 ## Stack
