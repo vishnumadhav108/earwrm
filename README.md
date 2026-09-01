@@ -1,11 +1,24 @@
 # earwrm
 try it at https://earwrm-xi.vercel.app/
 
+## Live App Views
+
+| Diary | Lists | Queue |
+|---|---|---|
+| ![livediaryview](docs/1.png) | ![livelistsview](docs/2.png) | ![livequeueview](docs/3.png) |
+
+## Original Design Views
+
+| Diary | Lists | Queue |
+|---|---|---|
+| ![designdiaryview](docs/4.png) | ![designlistsview](docs/5.png) | ![designqueueview](docs/6.png) |
+
+
 A Letterboxd-style music diary. Log what you played, rate it out of five, write a
 line about it, keep lists and a queue of what's next. 
 A long-time dream project sprinted over a weekend into a prototype.
 
-Built from a Claude Design prototype. Prototype design viewable at earwrmDesign.pdf
+Built from a Claude Design prototype. Full prototype design viewable at earwrmDesign.pdf
 This is a personal-use prototype, not production code.
 
 ## Stack
