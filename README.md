@@ -18,7 +18,7 @@ A Letterboxd-style music diary. Log what you played, rate it out of five, write 
 line about it, keep lists and a queue of what's next. 
 A long-time dream project sprinted over a weekend into a prototype.
 
-Built from a Claude Design prototype. Full prototype design viewable at earwrmDesign.pdf
+Built from a Claude Design prototype. Full prototype design viewable here: [earwrmDesign.pdf](earwrmDesign.pdf). 
 This is a personal-use prototype, not production code.
 
 ## Stack
