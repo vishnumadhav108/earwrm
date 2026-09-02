@@ -116,7 +116,7 @@ export function AppShell() {
   if (!store.ready) {
     return (
       <div className="app-shell" style={{ alignItems: "center", justifyContent: "center" }}>
-        <div style={{ font: "500 10px/1 inherit", letterSpacing: ".2em", color: C.w28 }}>EARWRM</div>
+        <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w28 }}>EARWRM</div>
       </div>
     );
   }
@@ -248,12 +248,12 @@ export function AppShell() {
           body={`${rel(confirmEntry).title} will be unmarked as listened, and your star rating and review will be deleted. This can’t be undone.`}
         >
           <div style={{ display: "flex", gap: 9, marginTop: 20 }}>
-            <button onClick={() => setConfirmEntry(null)} style={{ flex: 1, height: 39, borderRadius: 5, border: `1px solid ${C.w16}`, font: "500 14px/1 inherit" }}>
+            <button onClick={() => setConfirmEntry(null)} style={{ flex: 1, height: 39, borderRadius: 5, border: `1px solid ${C.w16}`, fontWeight: 500, fontSize: 14, lineHeight: 1 }}>
               Cancel
             </button>
             <button
               onClick={() => { store.removeEntry(confirmEntry); setConfirmEntry(null); setSheet(null); reset(); }}
-              style={{ flex: 1, height: 39, borderRadius: 5, background: C.danger, color: C.dangerFg, font: "600 14px/1 inherit" }}
+              style={{ flex: 1, height: 39, borderRadius: 5, background: C.danger, color: C.dangerFg, fontWeight: 600, fontSize: 14, lineHeight: 1 }}
             >
               Delete
             </button>
@@ -267,7 +267,7 @@ export function AppShell() {
           body={`${store.lists.find((l) => l.id === confirmList)?.name ?? "This list"} will be deleted permanently. The releases stay in your diary.`}
         >
           <div style={{ display: "flex", gap: 9, marginTop: 20 }}>
-            <button onClick={() => setConfirmList(null)} style={{ flex: 1, height: 39, borderRadius: 5, border: `1px solid ${C.w16}`, font: "500 14px/1 inherit" }}>
+            <button onClick={() => setConfirmList(null)} style={{ flex: 1, height: 39, borderRadius: 5, border: `1px solid ${C.w16}`, fontWeight: 500, fontSize: 14, lineHeight: 1 }}>
               Cancel
             </button>
             <button
@@ -276,7 +276,7 @@ export function AppShell() {
                 setConfirmList(null);
                 setNav((n) => n.filter((v) => v !== "editlist" && v !== "list"));
               }}
-              style={{ flex: 1, height: 39, borderRadius: 5, background: C.danger, color: C.dangerFg, font: "600 14px/1 inherit" }}
+              style={{ flex: 1, height: 39, borderRadius: 5, background: C.danger, color: C.dangerFg, fontWeight: 600, fontSize: 14, lineHeight: 1 }}
             >
               Delete
             </button>
@@ -291,10 +291,10 @@ export function AppShell() {
           z={96}
         >
           <div style={{ display: "flex", gap: 9, marginTop: 20 }}>
-            <button onClick={() => setConfirmAccount(false)} style={{ flex: 1, height: 39, borderRadius: 5, border: `1px solid ${C.w16}`, font: "500 14px/1 inherit" }}>
+            <button onClick={() => setConfirmAccount(false)} style={{ flex: 1, height: 39, borderRadius: 5, border: `1px solid ${C.w16}`, fontWeight: 500, fontSize: 14, lineHeight: 1 }}>
               Cancel
             </button>
-            <button onClick={() => void deleteAccount()} style={{ flex: 1, height: 39, borderRadius: 5, background: C.danger, color: C.dangerFg, font: "600 14px/1 inherit" }}>
+            <button onClick={() => void deleteAccount()} style={{ flex: 1, height: 39, borderRadius: 5, background: C.danger, color: C.dangerFg, fontWeight: 600, fontSize: 14, lineHeight: 1 }}>
               Delete
             </button>
           </div>
@@ -305,7 +305,7 @@ export function AppShell() {
         <Dialog title="Not saved" body={store.error} z={97}>
           <button
             onClick={store.clearError}
-            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, border: `1px solid ${C.w22}`, background: "transparent", font: "600 14px/1 inherit", color: "#fff" }}
+            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, border: `1px solid ${C.w22}`, background: "transparent", fontWeight: 600, fontSize: 14, lineHeight: 1, color: "#fff" }}
           >
             OK
           </button>
@@ -316,7 +316,7 @@ export function AppShell() {
         <Dialog title={notice.title} body={notice.body} z={95}>
           <button
             onClick={() => setNotice(null)}
-            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, border: `1px solid ${C.w22}`, background: "transparent", font: "600 14px/1 inherit", color: "#fff" }}
+            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, border: `1px solid ${C.w22}`, background: "transparent", fontWeight: 600, fontSize: 14, lineHeight: 1, color: "#fff" }}
           >
             OK
           </button>
@@ -327,7 +327,7 @@ export function AppShell() {
         <Dialog title="Five favorites is the limit" body="Remove one from your profile before adding another." z={90}>
           <button
             onClick={() => setFavFull(false)}
-            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, border: `1px solid ${C.w16}`, font: "500 14px/1 inherit" }}
+            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, border: `1px solid ${C.w16}`, fontWeight: 500, fontSize: 14, lineHeight: 1 }}
           >
             Got it
           </button>

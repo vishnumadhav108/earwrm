@@ -47,12 +47,12 @@ export function ComingSoonScreen({
           style={{
             width: 34, height: 34, borderRadius: "50%", background: "#1d1d21", border: `1px solid ${C.w12}`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            font: "500 11px/1 inherit", letterSpacing: ".04em", color: C.w72,
+            fontWeight: 500, fontSize: 11, lineHeight: 1, letterSpacing: ".04em", color: C.w72,
           }}
         >
           {initials}
         </button>
-        <div style={{ font: "700 17px/1 inherit", letterSpacing: "-.03em", color: C.w92 }}>earwrm</div>
+        <div style={{ fontWeight: 700, fontSize: 17, lineHeight: 1, letterSpacing: "-.03em", color: C.w92 }}>earwrm</div>
         <div style={{ width: 34, height: 34 }} />
       </div>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, textAlign: "center" }}>
@@ -64,13 +64,13 @@ export function ComingSoonScreen({
         >
           {soon.icon}
         </div>
-        <div style={{ font: "600 22px/1.15 inherit", letterSpacing: "-.028em" }}>{soon.name}</div>
-        <div style={{ font: "500 10px/1 inherit", letterSpacing: ".2em", color: C.w32 }}>COMING SOON</div>
+        <div style={{ fontWeight: 600, fontSize: 22, lineHeight: 1.15, letterSpacing: "-.028em" }}>{soon.name}</div>
+        <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w32 }}>COMING SOON</div>
         <button
           onClick={onBackToLog}
           style={{
             marginTop: 8, height: 33, padding: "0 20px", borderRadius: 5,
-            border: `1px solid ${C.w16}`, font: "600 13px/1 inherit", color: "rgba(255,255,255,.85)",
+            border: `1px solid ${C.w16}`, fontWeight: 600, fontSize: 13, lineHeight: 1, color: "rgba(255,255,255,.85)",
           }}
         >
           Back to Log

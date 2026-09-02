@@ -3,7 +3,7 @@
 import { C } from "@/lib/theme";
 import { placeholderRelease } from "@/lib/cover";
 import { useStore } from "@/lib/store";
-import { Cover, StarPicker, TypeBadge } from "./ui";
+import { Cover, HEART_PATH, StarPicker, TypeBadge } from "./ui";
 
 const PUR = C.accentLt;
 const NFG = C.w62;
@@ -27,7 +27,7 @@ export function ActionSheet({
   const action = (label: string, active: boolean, onClick: () => void, icon: React.ReactNode) => (
     <button onClick={onClick} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 9, color: active ? PUR : NFG }}>
       {icon}
-      <span style={{ font: "600 8.5px/1 inherit", letterSpacing: ".1em" }}>{label}</span>
+      <span style={{ fontWeight: 600, fontSize: 8.5, lineHeight: 1, letterSpacing: ".1em" }}>{label}</span>
     </button>
   );
 
@@ -36,7 +36,7 @@ export function ActionSheet({
       onClick={onClick}
       style={{
         height: 46, display: "flex", alignItems: "center", justifyContent: "center",
-        borderTop: `1px solid ${C.w07}`, font: "500 14px/1 inherit", color: "rgba(255,255,255,.9)",
+        borderTop: `1px solid ${C.w07}`, fontWeight: 500, fontSize: 14, lineHeight: 1, color: "rgba(255,255,255,.9)",
       }}
     >
       {label}
@@ -69,15 +69,15 @@ export function ActionSheet({
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Cover release={a} size={42} stripe={4} font={10} border="rgba(255,255,255,.09)" />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ font: "600 14.5px/1.25 inherit", letterSpacing: "-.015em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <div style={{ fontWeight: 600, fontSize: 14.5, lineHeight: 1.25, letterSpacing: "-.015em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {a.title}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0, marginTop: 3 }}>
               <TypeBadge type={a.type} />
-              <div style={{ font: "400 11.5px/1.3 inherit", color: C.w40, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.artist}</div>
+              <div style={{ fontWeight: 400, fontSize: 11.5, lineHeight: 1.3, color: C.w40, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.artist}</div>
             </div>
           </div>
-          <button onClick={onClose} style={{ flex: "none", width: 28, height: 28, font: "400 14px/1 inherit", color: C.w40 }}>✕</button>
+          <button onClick={onClose} style={{ flex: "none", width: 28, height: 28, fontWeight: 400, fontSize: 14, lineHeight: 1, color: C.w40 }}>✕</button>
         </div>
 
         <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
@@ -90,7 +90,7 @@ export function ActionSheet({
           ))}
           {action("LIKE", !!store.liked[releaseId], () => store.toggleLike(releaseId), (
             <svg width="27" height="27" viewBox="0 0 24 24" fill={store.liked[releaseId] ? PUR : "none"} stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
-              <path d="M12 20.2C12 20.2 4.4 15.6 4.4 10.6A4.1 4.1 0 0 1 12 8.1a4.1 4.1 0 0 1 7.6 2.5c0 5-7.6 9.6-7.6 9.6z" />
+              <path d={HEART_PATH} />
             </svg>
           ))}
           {action("QUEUE", inQueue, () => store.toggleQueue(releaseId), (

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { C, TOP } from "@/lib/theme";
 import { placeholderRelease } from "@/lib/cover";
 import { useStore } from "@/lib/store";
-import { Cover, Overlay, TypeBadge } from "../ui";
+import { Cover, Heart, Overlay, TypeBadge } from "../ui";
 import type { Release } from "@/lib/types";
 
 export type SearchMode = "plain" | "diary" | "queue" | "list";
@@ -158,7 +158,7 @@ export function SearchScreen({
               <polyline points="12,4 6,10 12,16" />
             </svg>
           </button>
-          <div style={{ flex: 1, textAlign: "center", font: "600 15px/1 inherit", letterSpacing: "-.02em" }}>{TITLES[mode]}</div>
+          <div style={{ flex: 1, textAlign: "center", fontWeight: 600, fontSize: 15, lineHeight: 1, letterSpacing: "-.02em" }}>{TITLES[mode]}</div>
           <div style={{ flex: "none", width: 22 }} />
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 9, height: 37, padding: "0 13px", borderRadius: 5, background: C.w06 }}>
@@ -170,17 +170,17 @@ export function SearchScreen({
             onChange={(e) => onQuery(e.target.value)}
             placeholder="Search artists and releases"
             autoFocus
-            style={{ flex: 1, minWidth: 0, font: "400 13.5px/1 inherit" }}
+            style={{ flex: 1, minWidth: 0, fontWeight: 400, fontSize: 13.5, lineHeight: 1 }}
           />
           {!!query && (
-            <button onClick={() => onQuery("")} style={{ font: "400 15px/1 inherit", color: C.w34 }}>✕</button>
+            <button onClick={() => onQuery("")} style={{ fontWeight: 400, fontSize: 15, lineHeight: 1, color: C.w34 }}>✕</button>
           )}
         </div>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "8px 20px 40px" }}>
         {!!label && (
-          <div style={{ font: "500 10px/1 inherit", letterSpacing: ".2em", color: C.w28, padding: "8px 0 6px" }}>{label}</div>
+          <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w28, padding: "8px 0 6px" }}>{label}</div>
         )}
         {showing.map((a) => (
           <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 0", borderBottom: `1px solid ${C.w045}` }}>
@@ -200,13 +200,13 @@ export function SearchScreen({
             >
               <Cover release={a} size={44} stripe={4} font={10} />
               <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
-                <div style={{ font: "500 14px/1.3 inherit", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</div>
+                <div style={{ fontWeight: 500, fontSize: 14, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                   <TypeBadge type={a.type} />
-                  <div style={{ font: "400 11.5px/1.3 inherit", color: C.w40, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div style={{ fontWeight: 400, fontSize: 11.5, lineHeight: 1.3, color: C.w40, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {a.artist}{a.year ? ` · ${a.year}` : ""}
                   </div>
-                  {liked[a.id] && <span style={{ flex: "none", fontSize: 11, lineHeight: 1, color: C.accentLt }}>♥</span>}
+                  {liked[a.id] && <Heart size={8.5} />}
                 </div>
               </div>
             </button>
@@ -215,13 +215,13 @@ export function SearchScreen({
 
         {!!query.trim() && !busy && results.length === 0 && (
           <div style={{ padding: "64px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 10, textAlign: "center" }}>
-            <div style={{ font: "600 15px/1.3 inherit" }}>
+            <div style={{ fontWeight: 600, fontSize: 15, lineHeight: 1.3 }}>
               {error ? "Search is unavailable" : `No matches for “${query}”`}
             </div>
-            <div style={{ font: "400 13px/1.5 inherit", color: C.w42, maxWidth: 240, textWrap: "pretty" }}>
+            <div style={{ fontWeight: 400, fontSize: 13, lineHeight: 1.5, color: C.w42, maxWidth: 240, textWrap: "pretty" }}>
               {error ?? "Check the spelling, or search by artist instead of release title."}
             </div>
-            <button onClick={() => onQuery("")} style={{ marginTop: 4, font: "500 12.5px/1 inherit", color: C.w60 }}>
+            <button onClick={() => onQuery("")} style={{ marginTop: 4, fontWeight: 500, fontSize: 12.5, lineHeight: 1, color: C.w60 }}>
               Clear search
             </button>
           </div>

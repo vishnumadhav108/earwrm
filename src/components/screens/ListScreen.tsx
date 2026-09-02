@@ -42,13 +42,13 @@ export function ListScreen({
         <PlusButton onClick={onAdd} title="Add to list" />
       </div>
       <div style={{ flex: "none", padding: "2px 20px 0" }}>
-        <div style={{ font: "600 22px/1.15 inherit", letterSpacing: "-.028em", textWrap: "pretty" }}>{list.name}</div>
+        <div style={{ fontWeight: 600, fontSize: 22, lineHeight: 1.15, letterSpacing: "-.028em", textWrap: "pretty" }}>{list.name}</div>
         {!!list.desc && (
-          <div style={{ marginTop: 6, font: "400 12.5px/1.5 inherit", color: C.w42, textWrap: "pretty" }}>{list.desc}</div>
+          <div style={{ marginTop: 6, fontWeight: 400, fontSize: 12.5, lineHeight: 1.5, color: C.w42, textWrap: "pretty" }}>{list.desc}</div>
         )}
       </div>
       <div style={{ flex: 1, overflowY: "auto", padding: "0 20px 40px" }}>
-        <div style={{ display: "flex", justifyContent: "flex-end", padding: "14px 0 10px", borderBottom: `1px solid ${C.w07}`, font: "400 10.5px/1.2 inherit", color: C.w32 }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", padding: "14px 0 10px", borderBottom: `1px solid ${C.w07}`, fontWeight: 400, fontSize: 10.5, lineHeight: 1.2, color: C.w32 }}>
           {list.ids.length}
         </div>
         {list.ids.map((id) => {
@@ -62,7 +62,7 @@ export function ListScreen({
                   style={{
                     width: sw.deleteWidth, display: "flex", flexDirection: "column", alignItems: "center",
                     justifyContent: "center", gap: 5, background: C.danger, color: C.dangerFg,
-                    font: "600 9px/1 inherit", letterSpacing: ".16em",
+                    fontWeight: 600, fontSize: 9, lineHeight: 1, letterSpacing: ".16em",
                   }}
                 >
                   {TrashIcon}DELETE
@@ -80,10 +80,10 @@ export function ListScreen({
                 <button {...g.tapProps(id, () => onOpenRelease(id))} style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 12, textAlign: "left" }}>
                   <Cover release={a} size={44} stripe={4} font={10} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ font: "500 14px/1.3 inherit", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</div>
+                    <div style={{ fontWeight: 500, fontSize: 14, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</div>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0, marginTop: 2 }}>
                       <TypeBadge type={a.type} />
-                      <div style={{ font: "400 11.5px/1.3 inherit", color: C.w40, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.artist}</div>
+                      <div style={{ fontWeight: 400, fontSize: 11.5, lineHeight: 1.3, color: C.w40, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.artist}</div>
                     </div>
                   </div>
                 </button>
@@ -99,7 +99,7 @@ export function ListScreen({
           );
         })}
         {list.ids.length === 0 && (
-          <div style={{ padding: "64px 8px", textAlign: "center", font: "400 13px/1.5 inherit", color: C.w40 }}>
+          <div style={{ padding: "64px 8px", textAlign: "center", fontWeight: 400, fontSize: 13, lineHeight: 1.5, color: C.w40 }}>
             Nothing in this list yet.
           </div>
         )}

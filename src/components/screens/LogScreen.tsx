@@ -4,7 +4,7 @@ import { C, TOP_LOG } from "@/lib/theme";
 import { placeholderRelease } from "@/lib/cover";
 import { useDragReorder, useRowGestures } from "@/lib/gestures";
 import { useStore } from "@/lib/store";
-import { Cover, EmptyStars, EmptyState, Stars, TypeBadge, PlusButton } from "../ui";
+import { Cover, EmptyStars, EmptyState, Heart, Stars, TypeBadge, PlusButton } from "../ui";
 
 export type Seg = "diary" | "lists" | "tolisten";
 
@@ -26,7 +26,7 @@ const GripIcon = (
 
 const actionBtn = (bg: string, fg: string): React.CSSProperties => ({
   width: 82, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-  gap: 5, background: bg, color: fg, font: "600 9px/1 inherit", letterSpacing: ".16em",
+  gap: 5, background: bg, color: fg, fontWeight: 600, fontSize: 9, lineHeight: 1, letterSpacing: ".16em",
 });
 
 type Props = {
@@ -67,7 +67,7 @@ export function LogScreen(p: Props) {
     <button
       onClick={() => p.onSeg(key)}
       style={{
-        flex: 1, height: 26, borderRadius: 4, font: "500 11.5px/1 inherit", transition: "background .16s",
+        flex: 1, height: 26, borderRadius: 4, fontWeight: 500, fontSize: 11.5, lineHeight: 1, transition: "background .16s",
         background: p.seg === key ? C.segActive : "transparent",
         color: p.seg === key ? C.on : C.off,
       }}
@@ -87,12 +87,12 @@ export function LogScreen(p: Props) {
             style={{
               width: 34, height: 34, borderRadius: "50%", background: "#1d1d21", border: `1px solid ${C.w12}`,
               display: "flex", alignItems: "center", justifyContent: "center",
-              font: "500 11px/1 inherit", letterSpacing: ".04em", color: C.w72,
+              fontWeight: 500, fontSize: 11, lineHeight: 1, letterSpacing: ".04em", color: C.w72,
             }}
           >
             {initials}
           </button>
-          <div style={{ font: "700 17px/1 inherit", letterSpacing: "-.03em", color: C.w92 }}>earwrm</div>
+          <div style={{ fontWeight: 700, fontSize: 17, lineHeight: 1, letterSpacing: "-.03em", color: C.w92 }}>earwrm</div>
           <div style={{ width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <PlusButton onClick={p.seg === "lists" ? p.onNewList : p.onAdd} title={addTitle} />
           </div>
@@ -125,22 +125,22 @@ export function LogScreen(p: Props) {
                       <Cover release={a} size={66} stripe={5} font={15} />
                       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4, paddingTop: 2 }}>
                         <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                          <div style={{ flex: 1, minWidth: 0, font: "600 14.5px/1.25 inherit", letterSpacing: "-.015em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div style={{ flex: 1, minWidth: 0, fontWeight: 600, fontSize: 14.5, lineHeight: 1.25, letterSpacing: "-.015em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {a.title}
                           </div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                           <TypeBadge type={a.type} />
-                          <div style={{ font: "400 12.5px/1.2 inherit", color: C.w45, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div style={{ fontWeight: 400, fontSize: 12.5, lineHeight: 1.2, color: C.w45, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {a.artist}
                           </div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 1 }}>
                           {e.rating > 0 ? <Stars value={e.rating} size={12.5} /> : <EmptyStars size={12.5} />}
-                          {liked[e.releaseId] && <span style={{ flex: "none", fontSize: 11, lineHeight: 1, color: C.accentLt }}>♥</span>}
+                          {liked[e.releaseId] && <Heart size={10.5} />}
                         </div>
                         {!!e.review && (
-                          <div style={{ font: "400 12.5px/1.45 inherit", color: C.w62, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div style={{ fontWeight: 400, fontSize: 12.5, lineHeight: 1.45, color: C.w62, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {e.review}
                           </div>
                         )}
@@ -179,14 +179,14 @@ export function LogScreen(p: Props) {
                     >
                       <div style={{ display: "flex", alignItems: "baseline", gap: 10, width: "100%" }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ font: "600 16px/1.2 inherit", letterSpacing: "-.02em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div style={{ fontWeight: 600, fontSize: 16, lineHeight: 1.2, letterSpacing: "-.02em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {l.name}
                           </div>
                           {!!l.desc && (
-                            <div style={{ marginTop: 5, font: "400 12px/1.45 inherit", color: C.w40, textWrap: "pretty" }}>{l.desc}</div>
+                            <div style={{ marginTop: 5, fontWeight: 400, fontSize: 12, lineHeight: 1.45, color: C.w40, textWrap: "pretty" }}>{l.desc}</div>
                           )}
                         </div>
-                        <div style={{ flex: "none", font: "400 10.5px/1.2 inherit", color: C.w32 }}>{l.ids.length}</div>
+                        <div style={{ flex: "none", fontWeight: 400, fontSize: 10.5, lineHeight: 1.2, color: C.w32 }}>{l.ids.length}</div>
                       </div>
                       <div style={{ display: "flex", overflow: "hidden", width: "100%" }}>
                         {l.ids.slice(0, 8).map((id) => (
@@ -234,10 +234,10 @@ export function LogScreen(p: Props) {
                     <button {...g.tapProps(id, () => p.onOpenRelease(id))} style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 12, textAlign: "left" }}>
                       <Cover release={a} size={44} radius={4} stripe={4} font={10} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ font: "500 14px/1.3 inherit", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</div>
+                        <div style={{ fontWeight: 500, fontSize: 14, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</div>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0, marginTop: 2 }}>
                           <TypeBadge type={a.type} />
-                          <div style={{ font: "400 11.5px/1.3 inherit", color: C.w40, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div style={{ fontWeight: 400, fontSize: 11.5, lineHeight: 1.3, color: C.w40, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {a.artist}
                           </div>
                         </div>

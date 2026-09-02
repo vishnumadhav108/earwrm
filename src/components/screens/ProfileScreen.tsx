@@ -29,8 +29,8 @@ export function ProfileScreen({
 
   const stat = (value: number, label: string, first = false) => (
     <div style={{ flex: 1, padding: "15px 0", ...(first ? {} : { borderLeft: `1px solid ${C.w07}`, paddingLeft: 16 }) }}>
-      <div style={{ font: "600 17px/1 inherit" }}>{value}</div>
-      <div style={{ marginTop: 5, font: "400 9.5px/1 inherit", letterSpacing: ".14em", color: C.w32 }}>{label}</div>
+      <div style={{ fontWeight: 600, fontSize: 17, lineHeight: 1 }}>{value}</div>
+      <div style={{ marginTop: 5, fontWeight: 400, fontSize: 9.5, lineHeight: 1, letterSpacing: ".14em", color: C.w32 }}>{label}</div>
     </div>
   );
 
@@ -55,14 +55,14 @@ export function ProfileScreen({
             style={{
               flex: "none", width: 64, height: 64, borderRadius: "50%", background: "#1e1e23",
               border: `1px solid ${C.w12}`, display: "flex", alignItems: "center", justifyContent: "center",
-              font: "500 19px/1 inherit", color: C.w78,
+              fontWeight: 500, fontSize: 19, lineHeight: 1, color: C.w78,
             }}
           >
             {initials}
           </div>
           <div>
-            <div style={{ font: "600 18px/1.2 inherit", letterSpacing: "-.022em" }}>{name}</div>
-            <div style={{ marginTop: 4, font: "400 12px/1 inherit", color: C.w38 }}>
+            <div style={{ fontWeight: 600, fontSize: 18, lineHeight: 1.2, letterSpacing: "-.022em" }}>{name}</div>
+            <div style={{ marginTop: 4, fontWeight: 400, fontSize: 12, lineHeight: 1, color: C.w38 }}>
               @{profile.username || "you"}{profile.joined ? ` · joined ${profile.joined}` : ""}
             </div>
           </div>
@@ -75,7 +75,7 @@ export function ProfileScreen({
         </div>
 
         <div style={{ marginTop: 26 }}>
-          <div style={{ font: "500 10px/1 inherit", letterSpacing: ".2em", color: C.w30 }}>FAVORITES</div>
+          <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w30 }}>FAVORITES</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 7, marginTop: 12 }}>
             {favs.map((id) => (
               <button
@@ -96,8 +96,8 @@ export function ProfileScreen({
 
         {settings.privateDiary && (
           <div style={{ marginTop: 28, padding: 15, borderRadius: 5, background: C.w035 }}>
-            <div style={{ font: "500 13.5px/1.4 inherit" }}>Your diary is private</div>
-            <div style={{ marginTop: 5, font: "400 12.5px/1.5 inherit", color: C.w42, textWrap: "pretty" }}>
+            <div style={{ fontWeight: 500, fontSize: 13.5, lineHeight: 1.4 }}>Your diary is private</div>
+            <div style={{ marginTop: 5, fontWeight: 400, fontSize: 12.5, lineHeight: 1.5, color: C.w42, textWrap: "pretty" }}>
               Only you can see your logs and reviews until you turn sharing on in Settings.
             </div>
           </div>

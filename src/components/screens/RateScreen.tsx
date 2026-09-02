@@ -26,21 +26,21 @@ export function RateScreen({
   return (
     <Overlay>
       <div style={{ flex: "none", display: "flex", alignItems: "center", justifyContent: "space-between", padding: `${TOP}px 16px 8px` }}>
-        <button onClick={onBack} style={{ flex: 1, height: 30, padding: "0 6px", font: "400 13.5px/1 inherit", color: C.w55, textAlign: "left" }}>
+        <button onClick={onBack} style={{ flex: 1, height: 30, padding: "0 6px", fontWeight: 400, fontSize: 13.5, lineHeight: 1, color: C.w55, textAlign: "left" }}>
           Cancel
         </button>
-        <div style={{ flex: "none", font: "600 15px/1 inherit", letterSpacing: "-.02em" }}>{editing ? "Edit log" : "New log"}</div>
-        <button onClick={save} style={{ flex: 1, height: 30, padding: "0 6px", font: "600 13.5px/1 inherit", color: "#fff", textAlign: "right" }}>
+        <div style={{ flex: "none", fontWeight: 600, fontSize: 15, lineHeight: 1, letterSpacing: "-.02em" }}>{editing ? "Edit log" : "New log"}</div>
+        <button onClick={save} style={{ flex: 1, height: 30, padding: "0 6px", fontWeight: 600, fontSize: 13.5, lineHeight: 1, color: "#fff", textAlign: "right" }}>
           Save
         </button>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "18px 24px 40px", display: "flex", flexDirection: "column", alignItems: "center" }}>
         <Cover release={release} size={132} stripe={6} font={26} border={C.w10} />
-        <div style={{ marginTop: 18, font: "600 17px/1.25 inherit", letterSpacing: "-.02em", textAlign: "center" }}>{release.title}</div>
+        <div style={{ marginTop: 18, fontWeight: 600, fontSize: 17, lineHeight: 1.25, letterSpacing: "-.02em", textAlign: "center" }}>{release.title}</div>
         <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 7 }}>
           <TypeBadge type={release.type} height={15} font={9} />
-          <div style={{ flex: "none", whiteSpace: "nowrap", font: "400 13px/1.3 inherit", color: C.w45 }}>{release.artist}</div>
+          <div style={{ flex: "none", whiteSpace: "nowrap", fontWeight: 400, fontSize: 13, lineHeight: 1.3, color: C.w45 }}>{release.artist}</div>
         </div>
 
         <div style={{ marginTop: 26 }}>
@@ -49,8 +49,8 @@ export function RateScreen({
 
         <div style={{ width: "100%", marginTop: 28 }}>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 8 }}>
-            <div style={{ font: "500 10px/1 inherit", letterSpacing: ".2em", color: C.w30 }}>REVIEW</div>
-            <div style={{ font: "400 10px/1 inherit", color: C.w24 }}>{review.length}/240</div>
+            <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w30 }}>REVIEW</div>
+            <div style={{ fontWeight: 400, fontSize: 10, lineHeight: 1, color: C.w24 }}>{review.length}/240</div>
           </div>
           <textarea
             value={review}
@@ -58,7 +58,7 @@ export function RateScreen({
             placeholder="One line on how it landed…"
             style={{
               width: "100%", boxSizing: "border-box", minHeight: 96, resize: "none", padding: 14,
-              borderRadius: 5, background: C.w05, border: `1px solid ${C.w07}`, font: "400 14px/1.5 inherit",
+              borderRadius: 5, background: C.w05, border: `1px solid ${C.w07}`, fontWeight: 400, fontSize: 14, lineHeight: 1.5,
             }}
           />
         </div>
@@ -68,7 +68,7 @@ export function RateScreen({
             onClick={onAskDelete}
             style={{
               width: "100%", marginTop: 20, height: 41, borderRadius: 5, border: `1px solid ${C.dangerBorder}`,
-              background: "transparent", font: "500 13.5px/1 inherit", color: C.danger,
+              background: "transparent", fontWeight: 500, fontSize: 13.5, lineHeight: 1, color: C.danger,
             }}
           >
             Delete
@@ -78,7 +78,7 @@ export function RateScreen({
             onClick={save}
             style={{
               width: "100%", marginTop: 20, height: 41, borderRadius: 5, background: C.accent,
-              color: "#fff", font: "600 13.5px/1 inherit", letterSpacing: ".02em",
+              color: "#fff", fontWeight: 600, fontSize: 13.5, lineHeight: 1, letterSpacing: ".02em",
             }}
           >
             Add to diary

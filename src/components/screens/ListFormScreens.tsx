@@ -7,9 +7,9 @@ import { Overlay } from "../ui";
 
 const inputStyle: React.CSSProperties = {
   width: "100%", boxSizing: "border-box", height: 41, padding: "0 13px", borderRadius: 5,
-  background: C.w05, border: `1px solid ${C.w08}`, font: "400 14px/1 inherit",
+  background: C.w05, border: `1px solid ${C.w08}`, fontWeight: 400, fontSize: 14, lineHeight: 1,
 };
-const capStyle: React.CSSProperties = { font: "500 10px/1 inherit", letterSpacing: ".2em", color: C.w30 };
+const capStyle: React.CSSProperties = { fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w30 };
 const headerRow: React.CSSProperties = {
   flex: "none", display: "flex", alignItems: "center", justifyContent: "space-between", padding: `${TOP}px 16px 8px`,
 };
@@ -24,20 +24,20 @@ export function PickListsScreen({
   return (
     <Overlay>
       <div style={headerRow}>
-        <button onClick={onBack} style={{ height: 30, padding: "0 6px", font: "400 13.5px/1 inherit", color: C.w55 }}>Cancel</button>
-        <div style={{ font: "600 15px/1 inherit", letterSpacing: "-.02em" }}>Add to lists</div>
-        <button onClick={onBack} style={{ height: 30, padding: "0 6px", font: "600 13.5px/1 inherit", color: "#fff" }}>Done</button>
+        <button onClick={onBack} style={{ height: 30, padding: "0 6px", fontWeight: 400, fontSize: 13.5, lineHeight: 1, color: C.w55 }}>Cancel</button>
+        <div style={{ fontWeight: 600, fontSize: 15, lineHeight: 1, letterSpacing: "-.02em" }}>Add to lists</div>
+        <button onClick={onBack} style={{ height: 30, padding: "0 6px", fontWeight: 600, fontSize: 13.5, lineHeight: 1, color: "#fff" }}>Done</button>
       </div>
       <div style={{ flex: 1, overflowY: "auto", padding: "10px 20px 40px" }}>
-        <div style={{ font: "500 13.5px/1.4 inherit", color: C.w60, paddingBottom: 12 }}>{title}</div>
+        <div style={{ fontWeight: 500, fontSize: 13.5, lineHeight: 1.4, color: C.w60, paddingBottom: 12 }}>{title}</div>
         <button
           onClick={onNewList}
           style={{ width: "100%", display: "flex", alignItems: "center", gap: 11, padding: "11px 0", borderBottom: `1px solid ${C.w045}`, textAlign: "left" }}
         >
-          <div style={{ flex: "none", width: 26, height: 26, borderRadius: "50%", border: `1px dashed ${C.w22}`, display: "flex", alignItems: "center", justifyContent: "center", font: "400 13px/1 inherit", color: C.w50 }}>
+          <div style={{ flex: "none", width: 26, height: 26, borderRadius: "50%", border: `1px dashed ${C.w22}`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 400, fontSize: 13, lineHeight: 1, color: C.w50 }}>
             ＋
           </div>
-          <div style={{ font: "500 13.5px/1 inherit", color: C.w80 }}>New list</div>
+          <div style={{ fontWeight: 500, fontSize: 13.5, lineHeight: 1, color: C.w80 }}>New list</div>
         </button>
         {lists.map((l) => {
           const has = l.ids.includes(releaseId);
@@ -51,8 +51,8 @@ export function PickListsScreen({
               style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "13px 0", borderBottom: `1px solid ${C.w045}`, textAlign: "left" }}
             >
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ font: "500 14px/1.3 inherit", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.name}</div>
-                <div style={{ marginTop: 2, font: "400 11px/1.3 inherit", color: C.w36 }}>
+                <div style={{ fontWeight: 500, fontSize: 14, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.name}</div>
+                <div style={{ marginTop: 2, fontWeight: 400, fontSize: 11, lineHeight: 1.3, color: C.w36 }}>
                   {l.ids.length} {l.ids.length === 1 ? "release" : "releases"}
                 </div>
               </div>
@@ -60,7 +60,7 @@ export function PickListsScreen({
                 style={{
                   flex: "none", width: 22, height: 22, borderRadius: "50%",
                   border: `1px solid ${has ? C.purBorder : C.w16}`, background: has ? C.accent : "transparent",
-                  color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", font: "500 11px/1 inherit",
+                  color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 500, fontSize: 11, lineHeight: 1,
                 }}
               >
                 {has ? "✓" : ""}
@@ -79,11 +79,11 @@ export function NewListScreen({ onBack, onCreate }: { onBack: () => void; onCrea
   return (
     <Overlay>
       <div style={headerRow}>
-        <button onClick={onBack} style={{ height: 30, padding: "0 6px", font: "400 13.5px/1 inherit", color: C.w55 }}>Cancel</button>
-        <div style={{ font: "600 15px/1 inherit", letterSpacing: "-.02em" }}>New list</div>
+        <button onClick={onBack} style={{ height: 30, padding: "0 6px", fontWeight: 400, fontSize: 13.5, lineHeight: 1, color: C.w55 }}>Cancel</button>
+        <div style={{ fontWeight: 600, fontSize: 15, lineHeight: 1, letterSpacing: "-.02em" }}>New list</div>
         <button
           onClick={() => valid && onCreate(name.trim())}
-          style={{ height: 30, padding: "0 6px", font: "600 13.5px/1 inherit", color: valid ? "#fff" : C.w28 }}
+          style={{ height: 30, padding: "0 6px", fontWeight: 600, fontSize: 13.5, lineHeight: 1, color: valid ? "#fff" : C.w28 }}
         >
           Create
         </button>
@@ -108,11 +108,11 @@ export function EditListScreen({
   return (
     <Overlay z={50}>
       <div style={headerRow}>
-        <button onClick={onBack} style={{ height: 30, padding: "0 6px", font: "400 13.5px/1 inherit", color: C.w55 }}>Cancel</button>
-        <div style={{ font: "600 15px/1 inherit", letterSpacing: "-.02em" }}>Edit list</div>
+        <button onClick={onBack} style={{ height: 30, padding: "0 6px", fontWeight: 400, fontSize: 13.5, lineHeight: 1, color: C.w55 }}>Cancel</button>
+        <div style={{ fontWeight: 600, fontSize: 15, lineHeight: 1, letterSpacing: "-.02em" }}>Edit list</div>
         <button
           onClick={() => valid && onSave(name.trim(), desc)}
-          style={{ height: 30, padding: "0 6px", font: "600 13.5px/1 inherit", color: valid ? "#fff" : C.w28 }}
+          style={{ height: 30, padding: "0 6px", fontWeight: 600, fontSize: 13.5, lineHeight: 1, color: valid ? "#fff" : C.w28 }}
         >
           Save
         </button>
@@ -129,7 +129,7 @@ export function EditListScreen({
         />
         <button
           onClick={onAskDelete}
-          style={{ marginTop: 14, height: 41, borderRadius: 5, border: `1px solid ${C.dangerBorder}`, background: "transparent", font: "500 13.5px/1 inherit", color: C.danger }}
+          style={{ marginTop: 14, height: 41, borderRadius: 5, border: `1px solid ${C.dangerBorder}`, background: "transparent", fontWeight: 500, fontSize: 13.5, lineHeight: 1, color: C.danger }}
         >
           Delete list
         </button>

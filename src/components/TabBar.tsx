@@ -38,7 +38,7 @@ function TabButton({ tab, label, active, onClick }: { tab: Tab; label: string; a
       }}
     >
       {ICONS[tab]}
-      <span style={{ font: "600 8px/1 inherit", letterSpacing: ".11em" }}>{label}</span>
+      <span style={{ fontWeight: 600, fontSize: 8, lineHeight: 1, letterSpacing: ".11em" }}>{label}</span>
     </button>
   );
 }

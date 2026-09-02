@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { C, TOP } from "@/lib/theme";
 import { useStore } from "@/lib/store";
-import { BackButton, Cover, Overlay, Stars, TypeBadge } from "../ui";
+import { BackButton, Cover, Heart, Overlay, Stars, TypeBadge } from "../ui";
 import type { Release, ReleaseDetail } from "@/lib/types";
 
 /**
@@ -55,14 +55,14 @@ export function ReleaseScreen({
       <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 44px" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <Cover release={shown} size={158} stripe={8} font={30} border={C.w10} />
-          <div style={{ marginTop: 20, font: "600 20px/1.2 inherit", letterSpacing: "-.025em", textWrap: "pretty" }}>{shown.title}</div>
-          <div style={{ marginTop: 6, font: "500 14px/1.3 inherit", color: C.w62 }}>{shown.artist}</div>
+          <div style={{ marginTop: 20, fontWeight: 600, fontSize: 20, lineHeight: 1.2, letterSpacing: "-.025em", textWrap: "pretty" }}>{shown.title}</div>
+          <div style={{ marginTop: 6, fontWeight: 500, fontSize: 14, lineHeight: 1.3, color: C.w62 }}>{shown.artist}</div>
           <div style={{ marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
             <TypeBadge type={shown.type} height={15} font={9} />
-            {!!meta && <div style={{ font: "400 10.5px/1 inherit", letterSpacing: ".1em", color: C.w34 }}>{meta}</div>}
+            {!!meta && <div style={{ fontWeight: 400, fontSize: 10.5, lineHeight: 1, letterSpacing: ".1em", color: C.w34 }}>{meta}</div>}
           </div>
           {!!detail?.blurb && (
-            <div style={{ marginTop: 16, font: "400 13.5px/1.6 inherit", color: C.w55, textWrap: "pretty" }}>{detail.blurb}</div>
+            <div style={{ marginTop: 16, fontWeight: 400, fontSize: 13.5, lineHeight: 1.6, color: C.w55, textWrap: "pretty" }}>{detail.blurb}</div>
           )}
           <button
             onClick={onOpenSheet}
@@ -83,18 +83,18 @@ export function ReleaseScreen({
         {mine && (
           <div style={{ marginTop: 24, padding: 16, borderRadius: 5, background: C.w035, border: `1px solid ${C.w08}` }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ font: "500 10px/1 inherit", letterSpacing: ".2em", color: C.w45 }}>YOUR REVIEW</div>
+              <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w45 }}>YOUR REVIEW</div>
             </div>
             <div style={{ marginTop: 11, display: "flex", alignItems: "center", gap: 10 }}>
               {mine.rating > 0 && <Stars value={mine.rating} size={17} gap={2} />}
-              {liked[release.id] && <span style={{ flex: "none", fontSize: 13, lineHeight: 1, color: C.accentLt }}>♥</span>}
+              {liked[release.id] && <Heart size={14} />}
             </div>
             {!!mine.review && (
-              <div style={{ marginTop: 11, font: "400 14px/1.55 inherit", color: C.w82, textWrap: "pretty" }}>{mine.review}</div>
+              <div style={{ marginTop: 11, fontWeight: 400, fontSize: 14, lineHeight: 1.55, color: C.w82, textWrap: "pretty" }}>{mine.review}</div>
             )}
             <button
               onClick={onEditLog}
-              style={{ width: "100%", height: 33, marginTop: 15, borderRadius: 10, border: `1px solid ${C.w16}`, font: "500 13px/1 inherit" }}
+              style={{ width: "100%", height: 33, marginTop: 15, borderRadius: 10, border: `1px solid ${C.w16}`, fontWeight: 500, fontSize: 13, lineHeight: 1 }}
             >
               Edit
             </button>
@@ -103,13 +103,13 @@ export function ReleaseScreen({
 
         {!!detail?.tracks?.length && (
           <div style={{ marginTop: 30 }}>
-            <div style={{ font: "500 10px/1 inherit", letterSpacing: ".2em", color: C.w30, paddingBottom: 6 }}>TRACKLIST</div>
+            <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w30, paddingBottom: 6 }}>TRACKLIST</div>
             {detail.tracks.map((t, i) => (
               <div key={`${i}-${t}`} style={{ display: "flex", alignItems: "baseline", gap: 12, padding: "9px 0", borderBottom: `1px solid ${C.w04}` }}>
-                <div style={{ flex: "none", width: 18, font: "400 10.5px/1.4 inherit", color: C.w28 }}>
+                <div style={{ flex: "none", width: 18, fontWeight: 400, fontSize: 10.5, lineHeight: 1.4, color: C.w28 }}>
                   {i + 1 < 10 ? `0${i + 1}` : i + 1}
                 </div>
-                <div style={{ flex: 1, font: "400 13.5px/1.4 inherit", color: C.w78 }}>{t}</div>
+                <div style={{ flex: 1, fontWeight: 400, fontSize: 13.5, lineHeight: 1.4, color: C.w78 }}>{t}</div>
               </div>
             ))}
           </div>
@@ -117,7 +117,7 @@ export function ReleaseScreen({
 
         {SHOW_COMMUNITY_REVIEWS && (
           <div style={{ marginTop: 32 }}>
-            <div style={{ font: "500 10px/1 inherit", letterSpacing: ".2em", color: C.w30, paddingBottom: 10 }}>REVIEWS</div>
+            <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w30, paddingBottom: 10 }}>REVIEWS</div>
           </div>
         )}
       </div>

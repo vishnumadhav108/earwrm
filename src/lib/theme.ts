@@ -65,4 +65,4 @@ export const TOP = 56;
 export const TOP_LOG = 58;
 
 export const label = (size = 10) =>
-  ({ font: `500 ${size}px/1 var(--font-archivo), Archivo, sans-serif`, letterSpacing: ".2em", color: C.w30 }) as const;
+  ({ fontWeight: 500, fontSize: size, lineHeight: 1, letterSpacing: ".2em", color: C.w30 }) as const;

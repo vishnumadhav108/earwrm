@@ -102,6 +102,34 @@ export function StarPicker({
   );
 }
 
+/**
+ * The prototype's like heart: the same outline the action sheet's LIKE icon
+ * draws, filled purple for the "on" state that a row indicator always is.
+ */
+export const HEART_PATH =
+  "M12 20.2C12 20.2 4.4 15.6 4.4 10.6A4.1 4.1 0 0 1 12 8.1a4.1 4.1 0 0 1 7.6 2.5c0 5-7.6 9.6-7.6 9.6z";
+
+/**
+ * `size` is the drawn height of the heart, so callers can match it to the ink
+ * of the stars beside it. The viewBox is cropped to the path's own bounds —
+ * the shape only fills the middle 15.24x14.1 of the icon set's 24-unit box —
+ * so width and height describe the glyph rather than a box of mostly padding.
+ */
+export function Heart({ size }: { size: number }) {
+  return (
+    <svg
+      width={size * (15.24 / 14.1)}
+      height={size}
+      viewBox="4.38 6.1 15.24 14.1"
+      fill={C.accentLt}
+      aria-hidden
+      style={{ flex: "none", display: "block" }}
+    >
+      <path d={HEART_PATH} />
+    </svg>
+  );
+}
+
 /* ---------------------------------------------------------------- sleeve -- */
 
 /**
@@ -129,7 +157,7 @@ export function Cover({
       <div
         style={{
           position: "absolute", inset: 0, display: "flex", alignItems: "center",
-          justifyContent: "center", font: `500 ${font}px/1 inherit`, color: C.w38,
+          justifyContent: "center", fontWeight: 500, fontSize: font, lineHeight: 1, color: C.w38,
         }}
       >
         {release.initials}
@@ -159,7 +187,7 @@ export function TypeBadge({ type, height = 14, font = 8.5 }: { type: string; hei
     <div
       style={{
         flex: "none", height, padding: "0 5px", borderRadius: 3, border: `1px solid ${C.w15}`,
-        display: "flex", alignItems: "center", font: `500 ${font}px/1 inherit`,
+        display: "flex", alignItems: "center", fontWeight: 500, fontSize: font, lineHeight: 1,
         letterSpacing: ".08em", textTransform: "uppercase", color: C.w42,
       }}
     >
@@ -195,7 +223,7 @@ export function PlusButton({ onClick, title }: { onClick: () => void; title: str
       style={{
         width: 28, height: 28, borderRadius: "50%", border: `1px dashed ${C.w28}`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        font: "400 13px/1 inherit", color: C.w60,
+        fontWeight: 400, fontSize: 13, lineHeight: 1, color: C.w60,
       }}
     >
       ＋
@@ -220,8 +248,8 @@ export function Dialog({
           padding: "22px 20px", animation: "upIn .2s cubic-bezier(.2,.8,.2,1)",
         }}
       >
-        <div style={{ font: "600 15.5px/1.3 inherit" }}>{title}</div>
-        <div style={{ marginTop: 7, font: "400 13.5px/1.5 inherit", color: C.w48, textWrap: "pretty" }}>{body}</div>
+        <div style={{ fontWeight: 600, fontSize: 15.5, lineHeight: 1.3 }}>{title}</div>
+        <div style={{ marginTop: 7, fontWeight: 400, fontSize: 13.5, lineHeight: 1.5, color: C.w48, textWrap: "pretty" }}>{body}</div>
         {children}
       </div>
     </div>
@@ -233,13 +261,13 @@ export const EmptyState = ({ title, children }: { title: string; children: React
     <div
       style={{
         width: 44, height: 44, borderRadius: "50%", border: `1px dashed ${C.w22}`, display: "flex",
-        alignItems: "center", justifyContent: "center", font: "400 17px/1 inherit", color: C.w45, marginBottom: 2,
+        alignItems: "center", justifyContent: "center", fontWeight: 400, fontSize: 17, lineHeight: 1, color: C.w45, marginBottom: 2,
       }}
     >
       ＋
     </div>
-    <div style={{ font: "600 15.5px/1.3 inherit" }}>{title}</div>
-    <div style={{ font: "400 13px/1.6 inherit", color: C.w42, maxWidth: 260, textWrap: "pretty" }}>{children}</div>
+    <div style={{ fontWeight: 600, fontSize: 15.5, lineHeight: 1.3 }}>{title}</div>
+    <div style={{ fontWeight: 400, fontSize: 13, lineHeight: 1.6, color: C.w42, maxWidth: 260, textWrap: "pretty" }}>{children}</div>
   </div>
 );
 
