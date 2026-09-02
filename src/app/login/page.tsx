@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { C } from "@/lib/theme";
 import { createClient } from "@/lib/supabase/client";
 
@@ -110,6 +111,26 @@ export default function LoginPage() {
           </button>
         </form>
       )}
+
+      {/* A way in for anyone who just wants to see the thing work. */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "22px 0 14px" }}>
+        <div style={{ flex: 1, height: 1, background: C.w08 }} />
+        <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w24 }}>OR</div>
+        <div style={{ flex: 1, height: 1, background: C.w08 }} />
+      </div>
+
+      <Link
+        href="/demo"
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "center", height: 41, borderRadius: 5,
+          border: `1px solid ${C.w16}`, fontWeight: 600, fontSize: 13.5, lineHeight: 1, color: C.w88,
+        }}
+      >
+        Try the demo
+      </Link>
+      <div style={{ marginTop: 9, fontWeight: 400, fontSize: 12, lineHeight: 1.5, color: C.w38, textAlign: "center", textWrap: "pretty" }}>
+        The full app with a diary already in it. Nothing you do there is saved.
+      </div>
     </div>
   );
 }

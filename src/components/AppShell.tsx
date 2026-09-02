@@ -40,9 +40,14 @@ export function AppShell() {
   const [favFull, setFavFull] = useState(false);
   const [email, setEmail] = useState("");
 
+  /** Shown once when a visitor lands on the demo, so "nothing saves" is not a surprise. */
+  const [showDemoIntro, setShowDemoIntro] = useState(store.demo);
+
   useEffect(() => {
+    // Demo mode has no session to read an address off.
+    if (store.demo) return;
     void createClient().auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
-  }, []);
+  }, [store.demo]);
 
   const overlay = nav.length ? nav[nav.length - 1] : null;
   const push = (v: Overlay) => setNav((n) => [...n, v]);
@@ -188,6 +193,7 @@ export function AppShell() {
 
       {overlay === "settings" && (
         <SettingsScreen
+          demo={store.demo}
           email={email}
           onBack={pop}
           onProfile={() => setNav(["profile"])}
@@ -298,6 +304,21 @@ export function AppShell() {
               Delete
             </button>
           </div>
+        </Dialog>
+      )}
+
+      {showDemoIntro && (
+        <Dialog
+          title="You’re in the demo"
+          body="Log records, rate them, write reviews, build lists — every feature works on a diary that already has some records in it. Nothing is saved, so a refresh puts it all back."
+          z={98}
+        >
+          <button
+            onClick={() => setShowDemoIntro(false)}
+            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, background: C.accent, color: "#fff", fontWeight: 600, fontSize: 14, lineHeight: 1 }}
+          >
+            Start exploring
+          </button>
         </Dialog>
       )}
 

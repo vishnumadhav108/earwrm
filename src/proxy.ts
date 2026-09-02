@@ -26,6 +26,12 @@ export async function proxy(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isAuthRoute = path.startsWith("/login") || path.startsWith("/auth");
+  // Demo mode runs the app with no session at all, so both the demo route and
+  // the MusicBrainz proxy it searches through have to sit outside the gate.
+  // The proxy only reads public catalogue data and is throttled server-side.
+  const isPublicRoute = path.startsWith("/demo") || path.startsWith("/api/mb");
+
+  if (isPublicRoute) return response;
 
   if (!user && !isAuthRoute) {
     const url = request.nextUrl.clone();

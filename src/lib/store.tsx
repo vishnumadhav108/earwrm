@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "./supabase/client";
+import { demoData } from "./demo";
 import { DEFAULT_SETTINGS, type Entry, type ListRecord, type Release, type Settings } from "./types";
 
 const TODAY = () => new Date().toISOString().slice(0, 10);
@@ -29,6 +30,8 @@ type Data = {
 };
 
 type Actions = {
+  /** True in demo mode: every change stays in memory and dies with the tab. */
+  demo: boolean;
   /** Non-null while the last write failed; the UI surfaces it and clears it. */
   error: string | null;
   clearError: () => void;
@@ -61,22 +64,32 @@ export const useStore = () => {
   return v;
 };
 
-export function StoreProvider({ children }: { children: React.ReactNode }) {
+/**
+ * `demo` swaps the Supabase-backed diary for an in-memory one: state is seeded
+ * from `demoData()` and every persist call short-circuits to success, so the UI
+ * behaves exactly as it does for a signed-in user while writing nothing. There
+ * is no persistence layer to opt out of, so closing the tab is the reset.
+ */
+export function StoreProvider({ children, demo = false }: { children: React.ReactNode; demo?: boolean }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const userId = useRef<string | null>(null);
 
-  const [d, setD] = useState<Data>({
-    ready: false,
-    profile: { username: "", displayName: "", joined: "" },
-    releases: {},
-    entries: [],
-    queue: [],
-    lists: [],
-    favs: [],
-    liked: {},
-    settings: DEFAULT_SETTINGS,
-  });
+  const [d, setD] = useState<Data>(() =>
+    demo
+      ? demoData()
+      : {
+          ready: false,
+          profile: { username: "", displayName: "", joined: "" },
+          releases: {},
+          entries: [],
+          queue: [],
+          lists: [],
+          favs: [],
+          liked: {},
+          settings: DEFAULT_SETTINGS,
+        },
+  );
 
   const [error, setError] = useState<string | null>(null);
 
@@ -91,6 +104,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   /* ------------------------------------------------------------- hydrate -- */
   useEffect(() => {
+    if (demo) return; // Already seeded; there is no session to read.
     let cancelled = false;
     (async () => {
       const { data: auth } = await supabase.auth.getUser();
@@ -147,7 +161,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       });
     })();
     return () => { cancelled = true; };
-  }, [supabase, patch]);
+  }, [supabase, patch, demo]);
 
   /* -------------------------------------------------------------- actions -- */
 
@@ -164,6 +178,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const pendingRelease = useRef(new Map<string, Promise<boolean>>());
 
   const remember = useCallback((r: Release): Promise<boolean> => {
+    if (demo) {
+      patch((s) => (s.releases[r.id] ? {} : { releases: { ...s.releases, [r.id]: r } }));
+      return Promise.resolve(true);
+    }
     const inflight = pendingRelease.current.get(r.id);
     if (inflight) return inflight;
 
@@ -190,7 +208,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     pendingRelease.current.set(r.id, p);
     return p;
-  }, [supabase, patch]);
+  }, [supabase, patch, demo]);
 
   /** Resolves once the release row is known to exist (or known to have failed). */
   const ensureRelease = useCallback(async (id: string): Promise<boolean> => {
@@ -206,6 +224,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     revert: () => void,
     run: () => PromiseLike<{ error: unknown }>,
   ): Promise<boolean> => {
+    // Demo mode has already applied the change locally, and that is the whole
+    // of it — `run` is never evaluated, so Supabase is never touched.
+    if (demo) return true;
     try {
       const { error } = await run();
       if (error) throw error;
@@ -217,7 +238,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       setError(WRITE_FAILED);
       return false;
     }
-  }, []);
+  }, [demo]);
 
   /** Same, but waits for the release row so the write cannot violate its FK. */
   const persistWithRelease = useCallback(async (
@@ -226,13 +247,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     revert: () => void,
     run: () => PromiseLike<{ error: unknown }>,
   ): Promise<boolean> => {
+    if (demo) return true;
     if (!(await ensureRelease(id))) {
       revert();
       setError(RELEASE_FAILED);
       return false;
     }
     return persist(label, revert, run);
-  }, [ensureRelease, persist]);
+  }, [ensureRelease, persist, demo]);
 
   const removeFromQueue = useCallback((id: string) => {
     const prev = dRef.current.queue;
@@ -395,19 +417,21 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const clearError = useCallback(() => setError(null), []);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    // Leaving the demo is just navigation: there is no session to end, and the
+    // seeded diary is discarded with the unmounted provider.
+    if (!demo) await supabase.auth.signOut();
     router.replace("/login");
     router.refresh();
-  }, [supabase, router]);
+  }, [supabase, router, demo]);
 
   const value = useMemo(
     () => ({
-      ...d, error, clearError,
+      ...d, demo, error, clearError,
       remember, setEntry, removeEntry, toggleListened, toggleLike, toggleQueue, removeFromQueue,
       reorderQueue, createList, updateList, deleteList, addToList, removeFromList, reorderList,
       toggleFav, reorderFavs, setSettings, signOut,
     }),
-    [d, error, clearError, remember, setEntry, removeEntry, toggleListened, toggleLike, toggleQueue,
+    [d, demo, error, clearError, remember, setEntry, removeEntry, toggleListened, toggleLike, toggleQueue,
      removeFromQueue, reorderQueue, createList, updateList, deleteList, addToList, removeFromList,
      reorderList, toggleFav, reorderFavs, setSettings, signOut],
   );

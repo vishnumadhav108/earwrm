@@ -13,18 +13,26 @@ const PREFS: { key: keyof Settings; label: string; hint: string }[] = [
 ];
 
 export function SettingsScreen({
-  email, onBack, onProfile, onAskDeleteAccount,
-}: { email: string; onBack: () => void; onProfile: () => void; onAskDeleteAccount: () => void }) {
+  demo, email, onBack, onProfile, onAskDeleteAccount,
+}: { demo: boolean; email: string; onBack: () => void; onProfile: () => void; onAskDeleteAccount: () => void }) {
   const { profile, settings, setSettings, signOut } = useStore();
   const name = profile.displayName || profile.username || "You";
   const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "··";
 
-  const accountRows = [
-    { label: "Username", value: `@${profile.username || "you"}` },
-    { label: "Display name", value: name },
-    { label: "Email", value: email || "—" },
-    { label: "Password", value: "Change" },
-  ];
+  // A demo visitor has no account behind these rows, so the two that only make
+  // sense with one — an address and a password to change — are left out rather
+  // than shown as blanks.
+  const accountRows = demo
+    ? [
+        { label: "Username", value: `@${profile.username || "you"}` },
+        { label: "Display name", value: name },
+      ]
+    : [
+        { label: "Username", value: `@${profile.username || "you"}` },
+        { label: "Display name", value: name },
+        { label: "Email", value: email || "—" },
+        { label: "Password", value: "Change" },
+      ];
 
   return (
     <Overlay>
@@ -101,16 +109,20 @@ export function SettingsScreen({
             onClick={() => void signOut()}
             style={{ height: 39, borderRadius: 5, border: `1px solid ${C.w16}`, fontWeight: 600, fontSize: 13.5, lineHeight: 1, color: C.w88 }}
           >
-            Log out
+            {demo ? "Exit demo" : "Log out"}
           </button>
-          <button
-            onClick={onAskDeleteAccount}
-            style={{ height: 39, borderRadius: 5, border: `1px solid ${C.dangerBorderSoft}`, fontWeight: 500, fontSize: 13.5, lineHeight: 1, color: C.danger }}
-          >
-            Delete account
-          </button>
+          {!demo && (
+            <button
+              onClick={onAskDeleteAccount}
+              style={{ height: 39, borderRadius: 5, border: `1px solid ${C.dangerBorderSoft}`, fontWeight: 500, fontSize: 13.5, lineHeight: 1, color: C.danger }}
+            >
+              Delete account
+            </button>
+          )}
         </div>
-        <div style={{ marginTop: 22, fontWeight: 400, fontSize: 11, lineHeight: 1.6, color: C.w24 }}>earwrm v0.1 · prototype build</div>
+        <div style={{ marginTop: 22, fontWeight: 400, fontSize: 11, lineHeight: 1.6, color: C.w24 }}>
+          {demo ? "earwrm v0.1 · demo · nothing here is saved" : "earwrm v0.1 · prototype build"}
+        </div>
       </div>
     </Overlay>
   );
