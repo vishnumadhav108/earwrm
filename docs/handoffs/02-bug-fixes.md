@@ -40,6 +40,19 @@
     - Email stays read-only, with no chevron.
     - **Test:** e2e.
 15. **The Private diary and Weekly recap toggles do nothing.** Hide both until handoffs 04 and 10 make them real. **Test:** none needed.
+16. **The API roles have table privileges RLS can't control.** Found in the handoff 01 baseline (a read-only production dump, 2026-11-06), and copied into `20260831000000_baseline.sql` unchanged.
+    - **What production grants:**
+      - `anon` has `REFERENCES, TRIGGER, TRUNCATE, MAINTAIN` on every `public` table.
+      - `authenticated` has `ALL` on entries, queue, likes, favorites, lists and list_items. That's the intended `SELECT, INSERT, UPDATE, DELETE` plus the same four.
+      - On profiles and releases, `authenticated` has `SELECT, INSERT, UPDATE` plus the same four.
+      - The default privileges for `postgres` in `public` hand those four to anon, authenticated and service_role on every new table.
+    - **Why it matters:** RLS doesn't govern `TRUNCATE`, so these grants are the only thing between an API role and emptying a table. PostgREST doesn't expose `TRUNCATE` today, so nothing in the app can do it yet. The grants are still wider than intended (`002_grants.sql` meant anon to have nothing).
+    - **Fix:** a new migration that does three things:
+      - revokes `TRUNCATE, REFERENCES, TRIGGER, MAINTAIN` on all `public` tables from `anon` and `authenticated`;
+      - leaves `anon` with no table privileges;
+      - removes those four from the `postgres` default privileges in `public` for anon and authenticated.
+      - `service_role` keeps `ALL`, and the intended DML grants for `authenticated` stay.
+    - **Test:** pgTAP checks `has_table_privilege` for each API role, table and privilege. It also creates a scratch table to check that new tables get no default grants for anon or authenticated.
 
 ## Acceptance criteria
 - Every item has a test that fails on `main` and passes on this branch. The PR description lists the test file for each item.
