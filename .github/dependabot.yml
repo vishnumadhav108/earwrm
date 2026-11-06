@@ -1,0 +1,19 @@
+# Dependabot opens one PR per update so majors (Next, ESLint, React) get
+# reviewed and tested on their own. Security fixes come through the same PRs.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # Patch/minor bumps of dev tooling land together; anything touching the
+      # runtime or a major version stays a separate PR.
+      dev-tooling:
+        dependency-type: development
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
