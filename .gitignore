@@ -42,3 +42,8 @@ next-env.d.ts
 
 # ...but the template is documentation and should be committed.
 !.env.example
+
+# test output
+/test-results/
+/playwright-report/
+/blob-report/
