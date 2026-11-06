@@ -218,7 +218,15 @@ function configuredPorts(workdir) {
 
 /** Confirms the running local stack is on loopback at the configured ports. Prints no secrets. */
 function assertLocalStack(args, env) {
-  const workdir = workdirOf(args);
+  return localStackStatus(workdirOf(args), env).description;
+}
+
+/**
+ * Reads `supabase status` for the local stack, checks it's on loopback at the ports
+ * config.toml expects, and returns the parsed status. The status contains keys, so
+ * callers must not print it.
+ */
+export function localStackStatus(workdir = null, env = process.env) {
   const want = configuredPorts(workdir);
   const statusArgs = ["status", "-o", "json", ...(workdir ? ["--workdir", workdir] : [])];
   const res = runCli(statusArgs, env);
@@ -238,8 +246,16 @@ function assertLocalStack(args, env) {
       `local stack is not where config.toml says: API ${api.host} (want :${want.api}), DB ${db.host} (want :${want.db}).`,
     );
   }
-  return `API ${api.host}, DB ${db.host}${workdir ? ` (workdir ${workdir})` : ""}`;
+  return { status: s, description: `API ${api.host}, DB ${db.host}${workdir ? ` (workdir ${workdir})` : ""}` };
 }
+
+export const isLoopbackUrl = (u) => {
+  try {
+    return LOOPBACK.has(new URL(u).hostname);
+  } catch {
+    return false;
+  }
+};
 
 function main(argv) {
   const sep = argv.indexOf("--");
