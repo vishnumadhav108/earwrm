@@ -7,7 +7,24 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # Node types must match the runtime, which is pinned to Node 24 (.nvmrc,
+      # engines, Vercel). Allow updates up to 24.x; skip 25+ until the runtime moves.
+      - dependency-name: "@types/node"
+        versions: [">=25"]
+      # ESLint majors wait until we choose to upgrade (eslint-config-next has
+      # supported ESLint 10 since 16.4). Minor and patch updates still come through.
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
     groups:
+      # React and its types always move together. This group is listed before
+      # dev-tooling so @types/react and @types/react-dom land here, not there.
+      react:
+        patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
       # Patch/minor bumps of dev tooling land together; anything touching the
       # runtime or a major version stays a separate PR.
       dev-tooling:

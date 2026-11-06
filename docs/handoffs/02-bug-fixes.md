@@ -30,6 +30,7 @@
 9. **List and favorite positions can collide.** `addToList` and `toggleFav` compute positions from the array length, and removing an item never renumbers the rest. **Fix:** renumber with ordinals on every add and remove. **Test:** unit + pgTAP ordering check.
 10. **Anyone signed in can overwrite cached release metadata.** Change `remember()` to `upsert(..., { onConflict: "id", ignoreDuplicates: true })`. Drop the `"refresh releases"` UPDATE policy and revoke UPDATE on releases from authenticated. **Test:** pgTAP shows UPDATE is denied.
 11. **`[mbid]` isn't validated.** `src/app/api/mb/release-group/[mbid]/route.ts` passes it to MusicBrainz as is. Reject anything that isn't a UUID with a 400. **Test:** a unit test on the route handler.
+    - **Confirmed in the fix/next-security smoke test (2026-11-05):** `GET /api/mb/release-group/not-a-uuid` spends a throttled MusicBrainz request and comes back **502** ("Lookup failed.") instead of being rejected locally. The test should assert that no MusicBrainz request is made for a non-UUID id.
 12. **No email confirmation callback.** Add `/auth/callback` (PKCE code exchange with `@supabase/ssr`), set `emailRedirectTo` on signUp, and check `src/proxy.ts`. **Test:** e2e with local Supabase (Inbucket/Mailpit catches the email).
 13. **No forgot-password flow.** Add a reset email plus a page for setting a new password. **Test:** e2e with local mail.
 14. **Settings account rows don't work.**
