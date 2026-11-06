@@ -57,7 +57,12 @@ Right now there are no tests, no CI and no migration history. The schema is two 
     - add Prettier with a format check in CI, and do a single formatting commit
     - turn on Dependabot for npm and GitHub Actions
 12. **Branch protection:** write `docs/STAGING.md` § "GitHub settings" for me, covering required CI checks on main and no direct pushes.
-13. **Runbook and restore drill:** start `docs/RUNBOOK.md`. Cover how to restore the database from a Supabase backup into staging, run that drill once, and record the date and result. Handoff 04 adds Storage.
+13. **Runbook and restore drill:** start `docs/RUNBOOK.md`. Cover how to restore the database from a production backup, run that drill once, and record the date and result. Handoff 04 adds Storage.
+    - **Restore target:** an isolated, disposable local Supabase stack, with its own `--workdir`, `project_id` and ports. **Never staging.**
+    - **Nothing else running:** no app processes, no email delivery (mailpit excluded) and no background jobs (edge-runtime excluded) during the restore. Only Postgres runs, plus gotrue and storage-api if they're needed to create the `auth` and `storage` tables. Check that those schemas exist before restoring. Nothing is exposed.
+    - **Procedure:** follow the documented backup/restore procedure for the pinned Supabase CLI (roles, schema and data dumps restored with `psql`).
+    - **Verify what the dump actually contains:** which schemas, roles, auth data and migration history. Also compare row counts and app-owned objects with production.
+    - **Always delete** the dump files and the restored data (`supabase stop --no-backup` and remove the workdir), even if verification fails. Dumps never go in the repo.
 14. **Feature flags:** a simple `feature_flags` table, cached and readable by the server, plus a helper. Later handoffs use it for kill switches (imports, enrichment, recommendations) so they can be turned off without touching manual logging.
 15. **Billing safety (COSTS.md):**
     - Create staging in a **separate Free Supabase organization**.
