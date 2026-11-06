@@ -137,7 +137,8 @@ export function StoreProvider({ children, demo = false }: { children: React.Reac
           title: r.title,
           artist: r.artist,
           year: r.year,
-          type: r.type,
+          // The column is text, but the releases_type_check constraint limits it to RELEASE_TYPES.
+          type: r.type as Release["type"],
           initials: r.initials,
           c1: r.c1,
           c2: r.c2,
@@ -159,7 +160,8 @@ export function StoreProvider({ children, demo = false }: { children: React.Reac
           displayName: profile.data?.display_name ?? profile.data?.username ?? "",
           joined: (profile.data?.created_at ?? "").slice(0, 4),
         },
-        settings: { ...DEFAULT_SETTINGS, ...(profile.data?.settings ?? {}) },
+        // settings is jsonb (typed Json). The app only ever writes Settings-shaped objects into it.
+        settings: { ...DEFAULT_SETTINGS, ...((profile.data?.settings as Partial<Settings> | null) ?? {}) },
         releases: relMap,
         entries: (entries.data ?? []).map((e) => ({
           releaseId: e.release_id,
