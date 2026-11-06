@@ -24,8 +24,16 @@ const TITLES: Record<SearchMode, string> = {
 const resultCache = new Map<string, Release[]>();
 
 export function SearchScreen({
-  mode, onBack, onPick, onHold,
-}: { mode: SearchMode; onBack: () => void; onPick: (r: Release) => void; onHold: (r: Release) => void }) {
+  mode,
+  onBack,
+  onPick,
+  onHold,
+}: {
+  mode: SearchMode;
+  onBack: () => void;
+  onPick: (r: Release) => void;
+  onHold: (r: Release) => void;
+}) {
   const { releases, entries, queue, liked } = useStore();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Release[]>([]);
@@ -82,10 +90,9 @@ export function SearchScreen({
       const still = () => inFlight.current === ctrl;
 
       const run = async (stage: 1 | 2) => {
-        const res = await fetch(
-          `/api/mb/search?q=${encodeURIComponent(q)}${stage === 1 ? "&stage=1" : ""}`,
-          { signal: ctrl.signal },
-        );
+        const res = await fetch(`/api/mb/search?q=${encodeURIComponent(q)}${stage === 1 ? "&stage=1" : ""}`, {
+          signal: ctrl.signal,
+        });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Search failed");
         return data.results as Release[];
@@ -129,7 +136,9 @@ export function SearchScreen({
 
   const showing = query.trim() ? results : recent;
   const label = !query.trim()
-    ? recent.length ? "RECENTLY LOGGED" : ""
+    ? recent.length
+      ? "RECENTLY LOGGED"
+      : ""
     : busy
       ? "SEARCHING…"
       : `${results.length} RESULT${results.length === 1 ? "" : "S"}`;
@@ -153,17 +162,68 @@ export function SearchScreen({
     <Overlay>
       <div style={{ flex: "none", padding: `${TOP + 2}px 20px 12px` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-          <button onClick={onBack} aria-label="Back" style={{ flex: "none", width: 30, height: 30, marginLeft: -8, display: "flex", alignItems: "center", justifyContent: "center", color: C.w75 }}>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+          <button
+            onClick={onBack}
+            aria-label="Back"
+            style={{
+              flex: "none",
+              width: 30,
+              height: 30,
+              marginLeft: -8,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: C.w75,
+            }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            >
               <polyline points="12,4 6,10 12,16" />
             </svg>
           </button>
-          <div style={{ flex: 1, textAlign: "center", fontWeight: 600, fontSize: 15, lineHeight: 1, letterSpacing: "-.02em" }}>{TITLES[mode]}</div>
+          <div
+            style={{
+              flex: 1,
+              textAlign: "center",
+              fontWeight: 600,
+              fontSize: 15,
+              lineHeight: 1,
+              letterSpacing: "-.02em",
+            }}
+          >
+            {TITLES[mode]}
+          </div>
           <div style={{ flex: "none", width: 22 }} />
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 9, height: 37, padding: "0 13px", borderRadius: 5, background: C.w06 }}>
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,.42)" strokeWidth="1.5" strokeLinecap="round">
-            <circle cx="9" cy="9" r="5.6" /><line x1="13.2" y1="13.2" x2="17" y2="17" />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 9,
+            height: 37,
+            padding: "0 13px",
+            borderRadius: 5,
+            background: C.w06,
+          }}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="rgba(255,255,255,.42)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          >
+            <circle cx="9" cy="9" r="5.6" />
+            <line x1="13.2" y1="13.2" x2="17" y2="17" />
           </svg>
           <input
             value={query}
@@ -173,17 +233,39 @@ export function SearchScreen({
             style={{ flex: 1, minWidth: 0, fontWeight: 400, fontSize: 13.5, lineHeight: 1 }}
           />
           {!!query && (
-            <button onClick={() => onQuery("")} style={{ fontWeight: 400, fontSize: 15, lineHeight: 1, color: C.w34 }}>✕</button>
+            <button onClick={() => onQuery("")} style={{ fontWeight: 400, fontSize: 15, lineHeight: 1, color: C.w34 }}>
+              ✕
+            </button>
           )}
         </div>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "8px 20px 40px" }}>
         {!!label && (
-          <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w28, padding: "8px 0 6px" }}>{label}</div>
+          <div
+            style={{
+              fontWeight: 500,
+              fontSize: 10,
+              lineHeight: 1,
+              letterSpacing: ".2em",
+              color: C.w28,
+              padding: "8px 0 6px",
+            }}
+          >
+            {label}
+          </div>
         )}
         {showing.map((a) => (
-          <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 0", borderBottom: `1px solid ${C.w045}` }}>
+          <div
+            key={a.id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "9px 0",
+              borderBottom: `1px solid ${C.w045}`,
+            }}
+          >
             <button
               onClick={() => {
                 if (pressed.current) {
@@ -200,11 +282,33 @@ export function SearchScreen({
             >
               <Cover release={a} size={44} stripe={4} font={10} />
               <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
-                <div style={{ fontWeight: 500, fontSize: 14, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</div>
+                <div
+                  style={{
+                    fontWeight: 500,
+                    fontSize: 14,
+                    lineHeight: 1.3,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {a.title}
+                </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                   <TypeBadge type={a.type} />
-                  <div style={{ fontWeight: 400, fontSize: 11.5, lineHeight: 1.3, color: C.w40, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {a.artist}{a.year ? ` · ${a.year}` : ""}
+                  <div
+                    style={{
+                      fontWeight: 400,
+                      fontSize: 11.5,
+                      lineHeight: 1.3,
+                      color: C.w40,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {a.artist}
+                    {a.year ? ` · ${a.year}` : ""}
                   </div>
                   {liked[a.id] && <Heart size={8.5} />}
                 </div>
@@ -214,14 +318,35 @@ export function SearchScreen({
         ))}
 
         {!!query.trim() && !busy && results.length === 0 && (
-          <div style={{ padding: "64px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 10, textAlign: "center" }}>
+          <div
+            style={{
+              padding: "64px 8px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 10,
+              textAlign: "center",
+            }}
+          >
             <div style={{ fontWeight: 600, fontSize: 15, lineHeight: 1.3 }}>
               {error ? "Search is unavailable" : `No matches for “${query}”`}
             </div>
-            <div style={{ fontWeight: 400, fontSize: 13, lineHeight: 1.5, color: C.w42, maxWidth: 240, textWrap: "pretty" }}>
+            <div
+              style={{
+                fontWeight: 400,
+                fontSize: 13,
+                lineHeight: 1.5,
+                color: C.w42,
+                maxWidth: 240,
+                textWrap: "pretty",
+              }}
+            >
               {error ?? "Check the spelling, or search by artist instead of release title."}
             </div>
-            <button onClick={() => onQuery("")} style={{ marginTop: 4, fontWeight: 500, fontSize: 12.5, lineHeight: 1, color: C.w60 }}>
+            <button
+              onClick={() => onQuery("")}
+              style={{ marginTop: 4, fontWeight: 500, fontSize: 12.5, lineHeight: 1, color: C.w60 }}
+            >
               Clear search
             </button>
           </div>

@@ -15,8 +15,16 @@ import type { Release, ReleaseDetail } from "@/lib/types";
 const SHOW_COMMUNITY_REVIEWS = false;
 
 export function ReleaseScreen({
-  release, onBack, onOpenSheet, onEditLog,
-}: { release: Release; onBack: () => void; onOpenSheet: () => void; onEditLog: () => void }) {
+  release,
+  onBack,
+  onOpenSheet,
+  onEditLog,
+}: {
+  release: Release;
+  onBack: () => void;
+  onOpenSheet: () => void;
+  onEditLog: () => void;
+}) {
   const { entries, liked } = useStore();
   // Keyed by release id so navigating to another release shows no detail until
   // its own lookup lands, without resetting state from inside the effect.
@@ -35,66 +43,143 @@ export function ReleaseScreen({
         // Detail is enrichment; the header already renders from cached metadata.
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [release.id]);
 
   const mine = entries.find((e) => e.releaseId === release.id);
   const shown: Release = detail ?? release;
 
-  const meta = [
-    shown.year ?? null,
-    detail?.label ?? null,
-    detail?.tracks ? `${detail.tracks.length} TRACKS` : null,
-  ].filter(Boolean).join(" · ");
+  const meta = [shown.year ?? null, detail?.label ?? null, detail?.tracks ? `${detail.tracks.length} TRACKS` : null]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <Overlay>
-      <div style={{ flex: "none", display: "flex", alignItems: "center", justifyContent: "space-between", padding: `${TOP}px 12px 6px` }}>
+      <div
+        style={{
+          flex: "none",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: `${TOP}px 12px 6px`,
+        }}
+      >
         <BackButton onClick={onBack} />
       </div>
       <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 44px" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <Cover release={shown} size={158} stripe={8} font={30} border={C.w10} />
-          <div style={{ marginTop: 20, fontWeight: 600, fontSize: 20, lineHeight: 1.2, letterSpacing: "-.025em", textWrap: "pretty" }}>{shown.title}</div>
-          <div style={{ marginTop: 6, fontWeight: 500, fontSize: 14, lineHeight: 1.3, color: C.w62 }}>{shown.artist}</div>
+          <div
+            style={{
+              marginTop: 20,
+              fontWeight: 600,
+              fontSize: 20,
+              lineHeight: 1.2,
+              letterSpacing: "-.025em",
+              textWrap: "pretty",
+            }}
+          >
+            {shown.title}
+          </div>
+          <div style={{ marginTop: 6, fontWeight: 500, fontSize: 14, lineHeight: 1.3, color: C.w62 }}>
+            {shown.artist}
+          </div>
           <div style={{ marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
             <TypeBadge type={shown.type} height={15} font={9} />
-            {!!meta && <div style={{ fontWeight: 400, fontSize: 10.5, lineHeight: 1, letterSpacing: ".1em", color: C.w34 }}>{meta}</div>}
+            {!!meta && (
+              <div style={{ fontWeight: 400, fontSize: 10.5, lineHeight: 1, letterSpacing: ".1em", color: C.w34 }}>
+                {meta}
+              </div>
+            )}
           </div>
           {!!detail?.blurb && (
-            <div style={{ marginTop: 16, fontWeight: 400, fontSize: 13.5, lineHeight: 1.6, color: C.w55, textWrap: "pretty" }}>{detail.blurb}</div>
+            <div
+              style={{
+                marginTop: 16,
+                fontWeight: 400,
+                fontSize: 13.5,
+                lineHeight: 1.6,
+                color: C.w55,
+                textWrap: "pretty",
+              }}
+            >
+              {detail.blurb}
+            </div>
           )}
           <button
             onClick={onOpenSheet}
             title="Actions"
             aria-label="Actions"
             style={{
-              marginTop: 20, width: 31, height: 31, borderRadius: "50%", border: `1px solid ${C.w28}`,
-              background: "transparent", color: C.w80, display: "flex", alignItems: "center",
-              justifyContent: "center", transition: "transform .14s",
+              marginTop: 20,
+              width: 31,
+              height: 31,
+              borderRadius: "50%",
+              border: `1px solid ${C.w28}`,
+              background: "transparent",
+              color: C.w80,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "transform .14s",
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="12" y1="6" x2="12" y2="18" /><line x1="6" y1="12" x2="18" y2="12" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <line x1="12" y1="6" x2="12" y2="18" />
+              <line x1="6" y1="12" x2="18" y2="12" />
             </svg>
           </button>
         </div>
 
         {mine && (
-          <div style={{ marginTop: 24, padding: 16, borderRadius: 5, background: C.w035, border: `1px solid ${C.w08}` }}>
+          <div
+            style={{ marginTop: 24, padding: 16, borderRadius: 5, background: C.w035, border: `1px solid ${C.w08}` }}
+          >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w45 }}>YOUR REVIEW</div>
+              <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w45 }}>
+                YOUR REVIEW
+              </div>
             </div>
             <div style={{ marginTop: 11, display: "flex", alignItems: "center", gap: 10 }}>
               {mine.rating > 0 && <Stars value={mine.rating} size={17} gap={2} />}
               {liked[release.id] && <Heart size={14} />}
             </div>
             {!!mine.review && (
-              <div style={{ marginTop: 11, fontWeight: 400, fontSize: 14, lineHeight: 1.55, color: C.w82, textWrap: "pretty" }}>{mine.review}</div>
+              <div
+                style={{
+                  marginTop: 11,
+                  fontWeight: 400,
+                  fontSize: 14,
+                  lineHeight: 1.55,
+                  color: C.w82,
+                  textWrap: "pretty",
+                }}
+              >
+                {mine.review}
+              </div>
             )}
             <button
               onClick={onEditLog}
-              style={{ width: "100%", height: 33, marginTop: 15, borderRadius: 10, border: `1px solid ${C.w16}`, fontWeight: 500, fontSize: 13, lineHeight: 1 }}
+              style={{
+                width: "100%",
+                height: 33,
+                marginTop: 15,
+                borderRadius: 10,
+                border: `1px solid ${C.w16}`,
+                fontWeight: 500,
+                fontSize: 13,
+                lineHeight: 1,
+              }}
             >
               Edit
             </button>
@@ -103,10 +188,32 @@ export function ReleaseScreen({
 
         {!!detail?.tracks?.length && (
           <div style={{ marginTop: 30 }}>
-            <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w30, paddingBottom: 6 }}>TRACKLIST</div>
+            <div
+              style={{
+                fontWeight: 500,
+                fontSize: 10,
+                lineHeight: 1,
+                letterSpacing: ".2em",
+                color: C.w30,
+                paddingBottom: 6,
+              }}
+            >
+              TRACKLIST
+            </div>
             {detail.tracks.map((t, i) => (
-              <div key={`${i}-${t}`} style={{ display: "flex", alignItems: "baseline", gap: 12, padding: "9px 0", borderBottom: `1px solid ${C.w04}` }}>
-                <div style={{ flex: "none", width: 18, fontWeight: 400, fontSize: 10.5, lineHeight: 1.4, color: C.w28 }}>
+              <div
+                key={`${i}-${t}`}
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: 12,
+                  padding: "9px 0",
+                  borderBottom: `1px solid ${C.w04}`,
+                }}
+              >
+                <div
+                  style={{ flex: "none", width: 18, fontWeight: 400, fontSize: 10.5, lineHeight: 1.4, color: C.w28 }}
+                >
                   {i + 1 < 10 ? `0${i + 1}` : i + 1}
                 </div>
                 <div style={{ flex: 1, fontWeight: 400, fontSize: 13.5, lineHeight: 1.4, color: C.w78 }}>{t}</div>
@@ -117,7 +224,18 @@ export function ReleaseScreen({
 
         {SHOW_COMMUNITY_REVIEWS && (
           <div style={{ marginTop: 32 }}>
-            <div style={{ fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w30, paddingBottom: 10 }}>REVIEWS</div>
+            <div
+              style={{
+                fontWeight: 500,
+                fontSize: 10,
+                lineHeight: 1,
+                letterSpacing: ".2em",
+                color: C.w30,
+                paddingBottom: 10,
+              }}
+            >
+              REVIEWS
+            </div>
           </div>
         )}
       </div>

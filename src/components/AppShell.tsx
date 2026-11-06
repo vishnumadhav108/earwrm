@@ -46,7 +46,9 @@ export function AppShell() {
   useEffect(() => {
     // Demo mode has no session to read an address off.
     if (store.demo) return;
-    void createClient().auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
+    void createClient()
+      .auth.getUser()
+      .then(({ data }) => setEmail(data.user?.email ?? ""));
   }, [store.demo]);
 
   const overlay = nav.length ? nav[nav.length - 1] : null;
@@ -134,13 +136,22 @@ export function AppShell() {
           onSeg={setSeg}
           onProfile={() => push("profile")}
           onAdd={() => openSearch(seg === "tolisten" ? "queue" : "diary")}
-          onNewList={() => { setPickId(null); push("newlist"); }}
+          onNewList={() => {
+            setPickId(null);
+            push("newlist");
+          }}
           onOpenRelease={openRelease}
           onHold={setSheet}
           onEditEntry={startRate}
           onAskDeleteEntry={setConfirmEntry}
-          onOpenList={(id) => { setListId(id); push("list"); }}
-          onEditList={(id) => { setListId(id); push("editlist"); }}
+          onOpenList={(id) => {
+            setListId(id);
+            push("list");
+          }}
+          onEditList={(id) => {
+            setListId(id);
+            push("editlist");
+          }}
           onAskDeleteList={setConfirmList}
         />
       )}
@@ -150,7 +161,12 @@ export function AppShell() {
           tab={tab}
           initials={
             (store.profile.displayName || store.profile.username || "")
-              .split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "··"
+              .split(/\s+/)
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((w) => w[0])
+              .join("")
+              .toUpperCase() || "··"
           }
           onProfile={() => push("profile")}
           onBackToLog={() => setTab("log")}
@@ -162,7 +178,10 @@ export function AppShell() {
           mode={searchMode}
           onBack={pop}
           onPick={onPick}
-          onHold={(r) => { void store.remember(r); setSheet(r.id); }}
+          onHold={(r) => {
+            void store.remember(r);
+            setSheet(r.id);
+          }}
         />
       )}
 
@@ -182,7 +201,10 @@ export function AppShell() {
           initialReview={rateInit.review}
           editing={rateInit.editing}
           onBack={pop}
-          onSave={(rating, review) => { store.setEntry(albumId, rating, review); reset(); }}
+          onSave={(rating, review) => {
+            store.setEntry(albumId, rating, review);
+            reset();
+          }}
           onAskDelete={() => setConfirmEntry(albumId)}
         />
       )}
@@ -221,29 +243,56 @@ export function AppShell() {
       )}
 
       {overlay === "newlist" && (
-        <NewListScreen onBack={pop} onCreate={(name) => { store.createList(name, pickId); pop(); }} />
+        <NewListScreen
+          onBack={pop}
+          onCreate={(name) => {
+            store.createList(name, pickId);
+            pop();
+          }}
+        />
       )}
 
       {overlay === "editlist" && listId && (
         <EditListScreen
           listId={listId}
           onBack={pop}
-          onSave={(name, desc) => { store.updateList(listId, name, desc); pop(); }}
+          onSave={(name, desc) => {
+            store.updateList(listId, name, desc);
+            pop();
+          }}
           onAskDelete={() => setConfirmList(listId)}
         />
       )}
 
       {!overlay && (
-        <TabBar tab={tab} onTab={(t) => { setTab(t); setNav([]); }} onAdd={() => openSearch("plain")} />
+        <TabBar
+          tab={tab}
+          onTab={(t) => {
+            setTab(t);
+            setNav([]);
+          }}
+          onAdd={() => openSearch("plain")}
+        />
       )}
 
       {sheet && (
         <ActionSheet
           releaseId={sheet}
           onClose={() => setSheet(null)}
-          onReview={() => { const id = sheet; setSheet(null); startRate(id); }}
-          onAddToLists={() => { setPickId(sheet); setSheet(null); push("pick"); }}
-          onFavFull={() => { setSheet(null); setFavFull(true); }}
+          onReview={() => {
+            const id = sheet;
+            setSheet(null);
+            startRate(id);
+          }}
+          onAddToLists={() => {
+            setPickId(sheet);
+            setSheet(null);
+            push("pick");
+          }}
+          onFavFull={() => {
+            setSheet(null);
+            setFavFull(true);
+          }}
           onNotice={(title, body) => setNotice({ title, body })}
         />
       )}
@@ -254,12 +303,37 @@ export function AppShell() {
           body={`${rel(confirmEntry).title} will be unmarked as listened, and your star rating and review will be deleted. This can’t be undone.`}
         >
           <div style={{ display: "flex", gap: 9, marginTop: 20 }}>
-            <button onClick={() => setConfirmEntry(null)} style={{ flex: 1, height: 39, borderRadius: 5, border: `1px solid ${C.w16}`, fontWeight: 500, fontSize: 14, lineHeight: 1 }}>
+            <button
+              onClick={() => setConfirmEntry(null)}
+              style={{
+                flex: 1,
+                height: 39,
+                borderRadius: 5,
+                border: `1px solid ${C.w16}`,
+                fontWeight: 500,
+                fontSize: 14,
+                lineHeight: 1,
+              }}
+            >
               Cancel
             </button>
             <button
-              onClick={() => { store.removeEntry(confirmEntry); setConfirmEntry(null); setSheet(null); reset(); }}
-              style={{ flex: 1, height: 39, borderRadius: 5, background: C.danger, color: C.dangerFg, fontWeight: 600, fontSize: 14, lineHeight: 1 }}
+              onClick={() => {
+                store.removeEntry(confirmEntry);
+                setConfirmEntry(null);
+                setSheet(null);
+                reset();
+              }}
+              style={{
+                flex: 1,
+                height: 39,
+                borderRadius: 5,
+                background: C.danger,
+                color: C.dangerFg,
+                fontWeight: 600,
+                fontSize: 14,
+                lineHeight: 1,
+              }}
             >
               Delete
             </button>
@@ -273,7 +347,18 @@ export function AppShell() {
           body={`${store.lists.find((l) => l.id === confirmList)?.name ?? "This list"} will be deleted permanently. The releases stay in your diary.`}
         >
           <div style={{ display: "flex", gap: 9, marginTop: 20 }}>
-            <button onClick={() => setConfirmList(null)} style={{ flex: 1, height: 39, borderRadius: 5, border: `1px solid ${C.w16}`, fontWeight: 500, fontSize: 14, lineHeight: 1 }}>
+            <button
+              onClick={() => setConfirmList(null)}
+              style={{
+                flex: 1,
+                height: 39,
+                borderRadius: 5,
+                border: `1px solid ${C.w16}`,
+                fontWeight: 500,
+                fontSize: 14,
+                lineHeight: 1,
+              }}
+            >
               Cancel
             </button>
             <button
@@ -282,7 +367,16 @@ export function AppShell() {
                 setConfirmList(null);
                 setNav((n) => n.filter((v) => v !== "editlist" && v !== "list"));
               }}
-              style={{ flex: 1, height: 39, borderRadius: 5, background: C.danger, color: C.dangerFg, fontWeight: 600, fontSize: 14, lineHeight: 1 }}
+              style={{
+                flex: 1,
+                height: 39,
+                borderRadius: 5,
+                background: C.danger,
+                color: C.dangerFg,
+                fontWeight: 600,
+                fontSize: 14,
+                lineHeight: 1,
+              }}
             >
               Delete
             </button>
@@ -297,10 +391,33 @@ export function AppShell() {
           z={96}
         >
           <div style={{ display: "flex", gap: 9, marginTop: 20 }}>
-            <button onClick={() => setConfirmAccount(false)} style={{ flex: 1, height: 39, borderRadius: 5, border: `1px solid ${C.w16}`, fontWeight: 500, fontSize: 14, lineHeight: 1 }}>
+            <button
+              onClick={() => setConfirmAccount(false)}
+              style={{
+                flex: 1,
+                height: 39,
+                borderRadius: 5,
+                border: `1px solid ${C.w16}`,
+                fontWeight: 500,
+                fontSize: 14,
+                lineHeight: 1,
+              }}
+            >
               Cancel
             </button>
-            <button onClick={() => void deleteAccount()} style={{ flex: 1, height: 39, borderRadius: 5, background: C.danger, color: C.dangerFg, fontWeight: 600, fontSize: 14, lineHeight: 1 }}>
+            <button
+              onClick={() => void deleteAccount()}
+              style={{
+                flex: 1,
+                height: 39,
+                borderRadius: 5,
+                background: C.danger,
+                color: C.dangerFg,
+                fontWeight: 600,
+                fontSize: 14,
+                lineHeight: 1,
+              }}
+            >
               Delete
             </button>
           </div>
@@ -315,7 +432,17 @@ export function AppShell() {
         >
           <button
             onClick={() => setShowDemoIntro(false)}
-            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, background: C.accent, color: "#fff", fontWeight: 600, fontSize: 14, lineHeight: 1 }}
+            style={{
+              width: "100%",
+              height: 39,
+              marginTop: 20,
+              borderRadius: 5,
+              background: C.accent,
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: 14,
+              lineHeight: 1,
+            }}
           >
             Start exploring
           </button>
@@ -326,7 +453,18 @@ export function AppShell() {
         <Dialog title="Not saved" body={store.error} z={97}>
           <button
             onClick={store.clearError}
-            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, border: `1px solid ${C.w22}`, background: "transparent", fontWeight: 600, fontSize: 14, lineHeight: 1, color: "#fff" }}
+            style={{
+              width: "100%",
+              height: 39,
+              marginTop: 20,
+              borderRadius: 5,
+              border: `1px solid ${C.w22}`,
+              background: "transparent",
+              fontWeight: 600,
+              fontSize: 14,
+              lineHeight: 1,
+              color: "#fff",
+            }}
           >
             OK
           </button>
@@ -337,7 +475,18 @@ export function AppShell() {
         <Dialog title={notice.title} body={notice.body} z={95}>
           <button
             onClick={() => setNotice(null)}
-            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, border: `1px solid ${C.w22}`, background: "transparent", fontWeight: 600, fontSize: 14, lineHeight: 1, color: "#fff" }}
+            style={{
+              width: "100%",
+              height: 39,
+              marginTop: 20,
+              borderRadius: 5,
+              border: `1px solid ${C.w22}`,
+              background: "transparent",
+              fontWeight: 600,
+              fontSize: 14,
+              lineHeight: 1,
+              color: "#fff",
+            }}
           >
             OK
           </button>
@@ -348,7 +497,16 @@ export function AppShell() {
         <Dialog title="Five favorites is the limit" body="Remove one from your profile before adding another." z={90}>
           <button
             onClick={() => setFavFull(false)}
-            style={{ width: "100%", height: 39, marginTop: 20, borderRadius: 5, border: `1px solid ${C.w16}`, fontWeight: 500, fontSize: 14, lineHeight: 1 }}
+            style={{
+              width: "100%",
+              height: 39,
+              marginTop: 20,
+              borderRadius: 5,
+              border: `1px solid ${C.w16}`,
+              fontWeight: 500,
+              fontSize: 14,
+              lineHeight: 1,
+            }}
           >
             Got it
           </button>

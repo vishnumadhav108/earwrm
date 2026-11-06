@@ -21,7 +21,8 @@ const SEEDS: Seed[] = [
   { id: "0da340a0-6ad7-4fc2-a272-6f94393a7831", title: "Blonde", artist: "Frank Ocean", year: 2016 },
   {
     id: "6086062c-f943-4b85-b1cb-43558425ec1c",
-    title: "The Idler Wheel Is Wiser Than the Driver of the Screw and Whipping Cords Will Serve You More Than Ropes Will Ever Do",
+    title:
+      "The Idler Wheel Is Wiser Than the Driver of the Screw and Whipping Cords Will Serve You More Than Ropes Will Ever Do",
     artist: "Fiona Apple",
     year: 2012,
   },
