@@ -122,6 +122,10 @@ function refFromEnv(env, name) {
 /**
  * Pure check of one invocation. Throws TargetError, or returns what the command
  * will hit. Exported so the rules can be unit-tested without a CLI or database.
+ *
+ * @param {string} mode
+ * @param {string[]} args
+ * @param {Record<string, string | undefined>} [env]
  */
 export function checkInvocation(mode, args, env = process.env) {
   if (!args.length) throw new TargetError("no supabase command given.");
