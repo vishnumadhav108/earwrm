@@ -412,7 +412,7 @@ async function blurbFor(relations: { type: string; url?: { resource: string } }[
   }
 }
 
-function firstSentence(text: string): string | null {
+export function firstSentence(text: string): string | null {
   const t = text.trim();
   if (!t) return null;
   // Break on a period that is followed by a space and a capital, so "Vol. 2"
