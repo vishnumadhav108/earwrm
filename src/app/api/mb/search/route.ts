@@ -22,9 +22,8 @@ export async function GET(request: Request) {
   const stage = url.searchParams.get("stage");
   if (!q) return NextResponse.json({ results: [] });
   try {
-    const results = stage === "1"
-      ? await searchTitles(q, 25, request.signal)
-      : await searchReleases(q, 25, request.signal);
+    const results =
+      stage === "1" ? await searchTitles(q, 25, request.signal) : await searchReleases(q, 25, request.signal);
     return NextResponse.json({ results });
   } catch (err) {
     // The client gave up (kept typing). Not an error worth logging.

@@ -23,9 +23,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={archivo.variable}>
-      <body style={{ fontFamily: "var(--font-archivo), Archivo, system-ui, sans-serif" }}>
-        {children}
-      </body>
+      <body style={{ fontFamily: "var(--font-archivo), Archivo, system-ui, sans-serif" }}>{children}</body>
     </html>
   );
 }

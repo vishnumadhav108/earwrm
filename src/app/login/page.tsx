@@ -50,16 +50,41 @@ export default function LoginPage() {
   };
 
   const input: React.CSSProperties = {
-    width: "100%", boxSizing: "border-box", height: 41, padding: "0 13px", borderRadius: 5,
-    background: C.w05, border: `1px solid ${C.w08}`, fontWeight: 400, fontSize: 14, lineHeight: 1,
+    width: "100%",
+    boxSizing: "border-box",
+    height: 41,
+    padding: "0 13px",
+    borderRadius: 5,
+    background: C.w05,
+    border: `1px solid ${C.w08}`,
+    fontWeight: 400,
+    fontSize: 14,
+    lineHeight: 1,
   };
-  const cap: React.CSSProperties = { fontWeight: 500, fontSize: 10, lineHeight: 1, letterSpacing: ".2em", color: C.w30 };
+  const cap: React.CSSProperties = {
+    fontWeight: 500,
+    fontSize: 10,
+    lineHeight: 1,
+    letterSpacing: ".2em",
+    color: C.w30,
+  };
 
   return (
     <div className="app-shell" style={{ justifyContent: "center", padding: "0 24px" }}>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 7, marginBottom: 34 }}>
-        <div style={{ fontWeight: 700, fontSize: 24, lineHeight: 1, letterSpacing: "-.03em", color: C.w92 }}>earwrm</div>
-        <div style={{ fontWeight: 400, fontSize: 13, lineHeight: 1.5, color: C.w40, textAlign: "center", textWrap: "pretty" }}>
+        <div style={{ fontWeight: 700, fontSize: 24, lineHeight: 1, letterSpacing: "-.03em", color: C.w92 }}>
+          earwrm
+        </div>
+        <div
+          style={{
+            fontWeight: 400,
+            fontSize: 13,
+            lineHeight: 1.5,
+            color: C.w40,
+            textAlign: "center",
+            textWrap: "pretty",
+          }}
+        >
           A music diary. Log what you played, rate it, keep lists.
         </div>
       </div>
@@ -67,14 +92,24 @@ export default function LoginPage() {
       {sent ? (
         <div style={{ textAlign: "center" }}>
           <div style={{ fontWeight: 600, fontSize: 15.5, lineHeight: 1.3 }}>Check your email</div>
-          <div style={{ marginTop: 7, fontWeight: 400, fontSize: 13.5, lineHeight: 1.5, color: C.w48, textWrap: "pretty" }}>
+          <div
+            style={{ marginTop: 7, fontWeight: 400, fontSize: 13.5, lineHeight: 1.5, color: C.w48, textWrap: "pretty" }}
+          >
             We sent a confirmation link to {email}. Open it to finish setting up your diary.
           </div>
         </div>
       ) : (
         <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <div style={cap}>EMAIL</div>
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" style={input} autoComplete="email" />
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            style={input}
+            autoComplete="email"
+          />
           <div style={{ ...cap, marginTop: 10 }}>PASSWORD</div>
           <input
             type="password"
@@ -88,15 +123,34 @@ export default function LoginPage() {
           />
 
           {error && (
-            <div style={{ marginTop: 4, fontWeight: 400, fontSize: 12.5, lineHeight: 1.5, color: C.danger, textWrap: "pretty" }}>{error}</div>
+            <div
+              style={{
+                marginTop: 4,
+                fontWeight: 400,
+                fontSize: 12.5,
+                lineHeight: 1.5,
+                color: C.danger,
+                textWrap: "pretty",
+              }}
+            >
+              {error}
+            </div>
           )}
 
           <button
             type="submit"
             disabled={busy}
             style={{
-              marginTop: 18, height: 41, borderRadius: 5, background: C.accent, color: "#fff",
-              fontWeight: 600, fontSize: 13.5, lineHeight: 1, letterSpacing: ".02em", opacity: busy ? 0.6 : 1,
+              marginTop: 18,
+              height: 41,
+              borderRadius: 5,
+              background: C.accent,
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: 13.5,
+              lineHeight: 1,
+              letterSpacing: ".02em",
+              opacity: busy ? 0.6 : 1,
             }}
           >
             {busy ? "…" : mode === "in" ? "Sign in" : "Create account"}
@@ -104,7 +158,10 @@ export default function LoginPage() {
 
           <button
             type="button"
-            onClick={() => { setMode(mode === "in" ? "up" : "in"); setError(null); }}
+            onClick={() => {
+              setMode(mode === "in" ? "up" : "in");
+              setError(null);
+            }}
             style={{ marginTop: 6, height: 32, fontWeight: 500, fontSize: 12.5, lineHeight: 1, color: C.w60 }}
           >
             {mode === "in" ? "Need an account? Sign up" : "Already have an account? Sign in"}
@@ -122,13 +179,31 @@ export default function LoginPage() {
       <Link
         href="/demo"
         style={{
-          display: "flex", alignItems: "center", justifyContent: "center", height: 41, borderRadius: 5,
-          border: `1px solid ${C.w16}`, fontWeight: 600, fontSize: 13.5, lineHeight: 1, color: C.w88,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: 41,
+          borderRadius: 5,
+          border: `1px solid ${C.w16}`,
+          fontWeight: 600,
+          fontSize: 13.5,
+          lineHeight: 1,
+          color: C.w88,
         }}
       >
         Try the demo
       </Link>
-      <div style={{ marginTop: 9, fontWeight: 400, fontSize: 12, lineHeight: 1.5, color: C.w38, textAlign: "center", textWrap: "pretty" }}>
+      <div
+        style={{
+          marginTop: 9,
+          fontWeight: 400,
+          fontSize: 12,
+          lineHeight: 1.5,
+          color: C.w38,
+          textAlign: "center",
+          textWrap: "pretty",
+        }}
+      >
         The full app with a diary already in it. Nothing you do there is saved.
       </div>
     </div>

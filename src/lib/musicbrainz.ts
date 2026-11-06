@@ -9,9 +9,7 @@ const MB = "https://musicbrainz.org/ws/2";
  * MusicBrainz requires a descriptive User-Agent naming the application and a
  * way to contact whoever runs it, or it may block the client outright.
  */
-const UA =
-  process.env.MUSICBRAINZ_USER_AGENT ??
-  "earwrm/0.1.0 ( https://github.com/vishnumadhav108/earwrm )";
+const UA = process.env.MUSICBRAINZ_USER_AGENT ?? "earwrm/0.1.0 ( https://github.com/vishnumadhav108/earwrm )";
 
 // Search results churn less than they look; an hour keeps repeat lookups and
 // back-navigation instant. Artist name -> MBID effectively never changes, so
@@ -132,10 +130,19 @@ const esc = (s: string) => s.replace(/([+\-!(){}[\]^"~*?:\\/]|&&|\|\|)/g, "\\$1"
 /* ----------------------------------------------------------------- calls --- */
 
 const norm = (s: string) =>
-  s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+  s
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 
 const TYPE_BONUS: Record<ReleaseType, number> = {
-  Album: 30, EP: 18, Mixtape: 18, Single: 6, Compilation: 2,
+  Album: 30,
+  EP: 18,
+  Mixtape: 18,
+  Single: 6,
+  Compilation: 2,
 };
 
 /**
@@ -173,7 +180,16 @@ function rank(r: Release, mbScore: number, q: string, artistBase: number | null)
  * by `releaseType` instead. Singles and compilations are excluded here too:
  * they crowd out albums, and are still reachable by searching their title.
  */
-const ARTIST_BRANCH_EXCLUDE = ["live", "remix", "demo", "soundtrack", "interview", "spokenword", "audiobook", "compilation"]
+const ARTIST_BRANCH_EXCLUDE = [
+  "live",
+  "remix",
+  "demo",
+  "soundtrack",
+  "interview",
+  "spokenword",
+  "audiobook",
+  "compilation",
+]
   .map((t) => `-secondarytype:${t}`)
   .join(" AND ");
 
@@ -304,7 +320,7 @@ export async function getRelease(mbid: string, signal?: AbortSignal): Promise<Re
   if (!base) return null;
 
   // Earliest official release carries the most representative tracklist + label.
-  const releases = (g.releases ?? []).slice().sort((a, b) => (a.date ?? "9999") < (b.date ?? "9999") ? -1 : 1);
+  const releases = (g.releases ?? []).slice().sort((a, b) => ((a.date ?? "9999") < (b.date ?? "9999") ? -1 : 1));
   const pick = releases.find((r) => r.status === "Official") ?? releases[0];
 
   let tracks: string[] | null = null;
@@ -358,10 +374,9 @@ async function blurbFor(relations: { type: string; url?: { resource: string } }[
     const cached = blurbCache.get(qid);
     if (cached !== undefined) return cached;
     try {
-      const res = await fetch(
-        `https://www.wikidata.org/wiki/Special:EntityData/${qid}.json`,
-        { headers: { "User-Agent": UA } },
-      );
+      const res = await fetch(`https://www.wikidata.org/wiki/Special:EntityData/${qid}.json`, {
+        headers: { "User-Agent": UA },
+      });
       if (!res.ok) return null;
       const data = (await res.json()) as {
         entities?: Record<string, { sitelinks?: Record<string, { title?: string }> }>;
@@ -381,10 +396,9 @@ async function blurbFor(relations: { type: string; url?: { resource: string } }[
   if (cached !== undefined) return cached;
 
   try {
-    const res = await fetch(
-      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
-      { headers: { "User-Agent": UA } },
-    );
+    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`, {
+      headers: { "User-Agent": UA },
+    });
     if (!res.ok) {
       blurbCache.set(key, null);
       return null;
