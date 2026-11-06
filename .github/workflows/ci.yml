@@ -49,3 +49,45 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  db:
+    # Migrations, generated types and pgTAP, against a fresh local Supabase stack in the
+    # runner. No hosted project is involved, and the job has no Supabase secrets. Every
+    # database command runs through scripts/db/target.mjs in local mode.
+    name: Database
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install (npm ci)
+        run: npm ci
+
+      # The pinned CLI comes from node_modules (supabase 3.0.0 in package-lock.json), the
+      # same binary used locally. No setup-cli action needed.
+      - name: Start local Supabase
+        run: npx supabase start -x studio,imgproxy,edge-runtime,vector
+
+      - name: Apply every migration to a fresh database (+ seed)
+        run: npm run db:reset
+
+      - name: Migrations - clean build vs legacy upgrade
+        run: npm run verify:migrations
+
+      - name: Generated types are up to date
+        run: |
+          npm run db:types
+          git diff --exit-code -- src/data/database.types.ts || {
+            echo "::error::src/data/database.types.ts is stale. Run 'npm run db:types' and commit the result."
+            exit 1
+          }
+
+      - name: pgTAP
+        run: npm run test:db
