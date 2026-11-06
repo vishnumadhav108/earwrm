@@ -91,3 +91,71 @@ jobs:
 
       - name: pgTAP
         run: npm run test:db
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install (npm ci)
+        run: npm ci
+
+      # Fails if Vitest executes zero tests (scripts/test-unit.mjs).
+      - name: Vitest
+        run: npm test
+
+  e2e:
+    # The full acceptance path on a fresh local stack: `npm run check` (typecheck, lint,
+    # unit, pgTAP, build:local) and then Playwright against /demo and local Supabase. No
+    # hosted project, no secrets. Outside requests (MusicBrainz, etc.) are blocked
+    # inside the tests.
+    name: E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install (npm ci)
+        run: npm ci
+
+      - name: Start local Supabase
+        run: npx supabase start -x studio,imgproxy,edge-runtime,vector
+
+      - name: Write the local-stack env
+        run: npm run env:local
+
+      - name: Apply every migration to a fresh database (+ seed)
+        run: npm run db:reset
+
+      - name: npm run check
+        run: npm run check
+
+      - name: Install Playwright's Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Playwright
+        run: npm run test:e2e
+
+      - name: Upload Playwright report and traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
