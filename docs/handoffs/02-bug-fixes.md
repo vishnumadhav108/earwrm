@@ -53,6 +53,18 @@
       - removes those four from the `postgres` default privileges in `public` for anon and authenticated.
       - `service_role` keeps `ALL`, and the intended DML grants for `authenticated` stay.
     - **Test:** pgTAP checks `has_table_privilege` for each API role, table and privilege. It also creates a scratch table to check that new tables get no default grants for anon or authenticated.
+17. **The release blurb is cut off after an initial such as "J. Cole".** Found while writing the handoff 01 unit tests (PR C).
+    - **What happens:** `firstSentence` (`src/lib/musicbrainz.ts`) splits on any `. ` followed by a capital, so "A record by J. Cole and friends." becomes "A record by J.". Its own comment says "J. Cole" shouldn't cut the sentence short.
+    - **Fix:** don't treat a period as a sentence end when the word before it is a single capital letter (an initial). Keep today's handling of "Vol. 2" and of real sentence ends ("…album. It was…").
+    - **Test:** `tests/unit/lib/musicbrainz.test.ts` already pins the bug as "KNOWN BUG: splits after a capitalised initial". Flip it to expect "A record by J. Cole and friends.", and add cases for a run of initials ("A. R. Rahman") and a real sentence end right after an initial-free word. The existing firstSentence tests must keep passing.
+18. **Swiping a list row with a mouse closes it straight away, so desktop users can't swipe-delete a list.** Found while writing the handoff 01 e2e tests (PR C).
+    - **What happens:**
+      - On the Lists tab (`src/components/screens/LogScreen.tsx`, the list row's `onClick`), the handler runs `if (g.swipeKey) return g.closeSwipe();`.
+      - With a mouse, releasing the button after a drag fires a click. That click closes the row the drag just opened, so the EDIT and DELETE actions are never reachable.
+      - Phones are unaffected, because browsers send no click after a touch swipe.
+      - Diary, queue and list-item rows don't have the bug: they use `useRowGestures().tapProps`, which ignores the click that follows a swipe (`suppressTap`).
+    - **Fix:** make the list row ignore the follow-up click the same way. Either route it through `tapProps`, or expose the suppression check from `useRowGestures` and use it. Don't change the touch behaviour.
+    - **Test:** an e2e test in `tests/e2e/` that opens the Lists tab on `/demo`, swipes a list row with the **mouse** (`page.mouse` down → move left more than 48 px → up), and asserts the row's DELETE action is clickable and opens "Delete this list?". It fails on `main` today. The existing touch-based e2e tests must keep passing.
 
 ## Acceptance criteria
 - Every item has a test that fails on `main` and passes on this branch. The PR description lists the test file for each item.
