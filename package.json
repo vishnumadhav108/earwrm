@@ -21,7 +21,8 @@
     "verify:migrations": "node scripts/db/verify-migrations.mjs",
     "test": "node scripts/test-unit.mjs",
     "test:e2e": "playwright test",
-    "check": "npm run typecheck && npm run lint && npm test && npm run test:db && npm run build:local"
+    "check": "npm run typecheck && npm run lint && npm test && npm run test:db && npm run build:local",
+    "test:e2e:guard": "playwright test --config playwright.guard.config.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",

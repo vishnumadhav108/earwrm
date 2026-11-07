@@ -3,7 +3,11 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   resolve: {
-    alias: { "@": path.resolve(__dirname, "src") },
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+      // Next.js resolves "server-only" itself; Vitest needs a stand-in.
+      "server-only": path.resolve(__dirname, "tests/unit/stubs/server-only.ts"),
+    },
   },
   test: {
     environment: "node",

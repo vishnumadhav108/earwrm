@@ -4,6 +4,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/data/database.types";
 import { flagOn, type FlagRow } from "@/lib/flags";
 import { TtlCache } from "@/lib/rateLimit";
+import { PREVIEW_GUARD } from "@/lib/supabase/guard";
 
 /**
  * Server-side reads of public.feature_flags, used as kill switches (imports,
@@ -26,7 +27,8 @@ let client: SupabaseClient<Database> | null = null;
 function anonClient(): SupabaseClient<Database> | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return null;
+  // A preview-guard build never talks to Supabase: flags fall back to their defaults.
+  if (!url || !key || PREVIEW_GUARD) return null;
   client ??= createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   return client;
 }

@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "./supabase/client";
+import { PREVIEW_GUARD } from "./supabase/guard";
 import { demoData } from "./demo";
 import { DEFAULT_SETTINGS, type Entry, type ListRecord, type Release, type Settings } from "./types";
 
@@ -57,6 +58,20 @@ type Actions = {
   signOut: () => Promise<void>;
 };
 
+/**
+ * Stand-in for the Supabase client where none may exist: demo mode (whose code paths never
+ * use it) and preview-guard builds (where the proxy redirects every non-demo page, but the
+ * page is still prerendered). If anything ever touches it, it throws instead of silently
+ * reaching a database.
+ */
+function noClient(reason: string): ReturnType<typeof createClient> {
+  return new Proxy({} as ReturnType<typeof createClient>, {
+    get() {
+      throw new Error(`The Supabase client is not available here (${reason}).`);
+    },
+  });
+}
+
 const Ctx = createContext<(Data & Actions) | null>(null);
 
 export const useStore = () => {
@@ -73,7 +88,12 @@ export const useStore = () => {
  */
 export function StoreProvider({ children, demo = false }: { children: React.ReactNode; demo?: boolean }) {
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
+  // Demo mode never touches Supabase (every persist call short-circuits), so it doesn't
+  // create a client at all. A preview-guard build may not create one either.
+  const supabase = useMemo(
+    () => (demo ? noClient("demo mode") : PREVIEW_GUARD ? noClient("preview guard") : createClient()),
+    [demo],
+  );
   const userId = useRef<string | null>(null);
 
   const [d, setD] = useState<Data>(() =>

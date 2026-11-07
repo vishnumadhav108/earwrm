@@ -34,13 +34,18 @@ export function parseEnvFile(text) {
   return out;
 }
 
-/** Resolves the env for a local run, or throws with a reason. Pure apart from reading the file. */
-export function resolveLocalEnv(baseEnv = process.env, file = path.join(root, ".env.localstack")) {
+/**
+ * Resolves the env for a local run, or throws with a reason. Pure apart from reading the
+ * file. `overrides` replace values afterwards (e.g. the preview-guard test points
+ * NEXT_PUBLIC_SUPABASE_URL at a local tripwire); the loopback check still applies.
+ */
+export function resolveLocalEnv(baseEnv = process.env, file = path.join(root, ".env.localstack"), overrides = {}) {
   const fromFile = fs.existsSync(file);
   const values = fromFile ? parseEnvFile(fs.readFileSync(file, "utf8")) : {};
   const keys = exampleKeys();
   const env = { ...baseEnv };
   for (const k of keys) if (fromFile) env[k] = values[k];
+  Object.assign(env, overrides);
 
   const missing = keys.filter((k) => !env[k]);
   if (missing.length) {

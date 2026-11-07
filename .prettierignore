@@ -18,3 +18,5 @@ docs/
 
 # SQL is not formatted by Prettier
 supabase/
+playwright-report-guard/
+test-results-guard/

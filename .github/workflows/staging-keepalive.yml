@@ -1,0 +1,33 @@
+name: Staging keep-alive
+
+# Best effort: keeps the Free staging project from pausing. GitHub disables scheduled
+# workflows after 60 days without repository activity. See docs/RUNBOOK.md § Resume staging.
+
+on:
+  schedule:
+    - cron: "17 6 * * *" # daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    name: Ping staging
+    if: vars.STAGING_ENABLED == 'true'
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - name: Call keep_alive() on staging
+        env:
+          STAGING_PROJECT_REF: ${{ vars.STAGING_PROJECT_REF }}
+          PRODUCTION_PROJECT_REF: ${{ vars.PRODUCTION_PROJECT_REF }}
+          STAGING_ANON_KEY: ${{ secrets.STAGING_ANON_KEY }}
+        run: node scripts/staging/keepalive.mjs

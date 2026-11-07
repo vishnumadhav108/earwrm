@@ -1,0 +1,90 @@
+name: Staging migrations
+
+# Applies supabase/migrations to the earwrm-staging project and maintains the
+# staging-last-good / staging-applied tags. See docs/STAGING.md and docs/RUNBOOK.md.
+# Production is never touched here: production migrations stay manual.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "normal, or bootstrap (one-time, fresh staging project only)"
+        type: choice
+        options: [normal, bootstrap]
+        default: normal
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-migrate
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Staging migrations
+    if: vars.STAGING_ENABLED == 'true'
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Check configuration
+        env:
+          APP_ID: ${{ secrets.STAGING_APP_ID }}
+          APP_KEY: ${{ secrets.STAGING_APP_PRIVATE_KEY }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          STAGING_PROJECT_REF: ${{ vars.STAGING_PROJECT_REF }}
+          PRODUCTION_PROJECT_REF: ${{ vars.PRODUCTION_PROJECT_REF }}
+        run: |
+          missing=""
+          for v in APP_ID APP_KEY SUPABASE_ACCESS_TOKEN STAGING_PROJECT_REF PRODUCTION_PROJECT_REF; do
+            [ -n "${!v}" ] || missing="$missing $v"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::STAGING_ENABLED is true but configuration is missing:$missing (see docs/STAGING.md)"
+            exit 1
+          fi
+          if [ "$STAGING_PROJECT_REF" = "$PRODUCTION_PROJECT_REF" ]; then
+            echo "::error::STAGING_PROJECT_REF equals PRODUCTION_PROJECT_REF"
+            exit 1
+          fi
+
+      - name: Mint a GitHub App token (tag writes)
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.STAGING_APP_ID }}
+          private-key: ${{ secrets.STAGING_APP_PRIVATE_KEY }}
+
+      - name: Install (npm ci)
+        run: npm ci
+
+      # Bootstrap only: a clean local build of this commit, to compare staging against.
+      - name: "Bootstrap: clean local build snapshot"
+        if: inputs.mode == 'bootstrap'
+        run: |
+          npx supabase start -x studio,imgproxy,edge-runtime,vector
+          npm run db:reset
+          node scripts/db/target.mjs local -- db query -f scripts/db/snapshot.sql -o json --agent=no > "$RUNNER_TEMP/local-snapshot.json"
+
+      - name: Migrate staging and publish tags
+        env:
+          MODE: ${{ inputs.mode || 'normal' }}
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          STAGING_PROJECT_REF: ${{ vars.STAGING_PROJECT_REF }}
+          PRODUCTION_PROJECT_REF: ${{ vars.PRODUCTION_PROJECT_REF }}
+          LOCAL_SNAPSHOT: ${{ runner.temp }}/local-snapshot.json
+        run: node scripts/staging/migrate.mjs
