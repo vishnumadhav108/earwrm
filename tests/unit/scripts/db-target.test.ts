@@ -63,6 +63,14 @@ describe("db target guard: staging", () => {
   it("refuses the production ref", () => refuses("staging", ["db", "push", `--remote=${PROD}`]));
   it("refuses --include-seed", () => refuses("staging", ["db", "push", "--include-seed", `--remote=${STAGING}`]));
   it("refuses db reset", () => refuses("staging", ["db", "reset", `--remote=${STAGING}`]));
+  it("allows db query only with --read-only", () => {
+    expect(
+      checkInvocation("staging", ["db", "query", "--read-only", "-f", "x.sql", `--remote=${STAGING}`], env),
+    ).toMatchObject({ command: "db query" });
+    refuses("staging", ["db", "query", "-f", "x.sql", `--remote=${STAGING}`]);
+  });
+  it("still refuses db query on production in production-read mode", () =>
+    refuses("production-read", ["db", "query", "--read-only", "select 1", "-p", "x", `--remote=${PROD}`]));
 });
 
 describe("redact", () => {

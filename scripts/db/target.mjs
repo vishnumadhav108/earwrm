@@ -55,6 +55,7 @@ const ALLOWED = {
   staging: [
     ["db", "push"],
     ["migration", "list"],
+    ["db", "query"], // only with --read-only (checked below)
   ],
   "production-read": [
     ["db", "dump"],
@@ -145,6 +146,9 @@ export function checkInvocation(mode, args, env = process.env) {
     const command = needsSubcommand(mode, args);
     exactlyRef(args, staging, "STAGING_PROJECT_REF");
     if (has(args, "--include-seed")) throw new TargetError("--include-seed is never allowed on a hosted database.");
+    if (command === "db query" && !has(args, "--read-only")) {
+      throw new TargetError("staging mode allows db query only with --read-only.");
+    }
     return { mode, kind: "hosted", ref: staging, command };
   }
 
