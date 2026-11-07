@@ -54,6 +54,24 @@ Verified 2026-11-05/06 against the installed CLI's `--help` and the [v3 migratio
 - **Verified:** `supabase start -x <containers>` excludes services. `[analytics] enabled = false` in config.toml stops the `vector` container from starting.
 - **Verified:** `db query -o json --agent=no` prints plain JSON rows. In agent mode it wraps them in an "untrusted data" envelope.
 - How earwrm uses this: `scripts/db/target.mjs` (see `docs/STAGING.md` § Guards).
+- **Verified (3.0.0 `--help`):** `db query --read-only` "Runs the statement in a read-only transaction; a hosted target needs no confirmation". `migration list --output-format json` prints `{"migrations":[{"local","remote","time"}]}`.
+
+### Supabase access tokens (checked 2026-11-06)
+- **Verified:** a classic (Legacy) token "carries every permission on every organization and project you belong to". A scoped token "can only reach the organizations, projects, and permissions you choose when creating it". Permissions are per resource (e.g. Migrations, Database, Project Settings), each Read or Read-write. A token never exceeds its account's roles. [PATs](https://supabase.com/docs/guides/platform/personal-access-tokens)
+- **Verified:** commands that connect with the database password (e.g. `db push` with `SUPABASE_DB_PASSWORD`) "aren't limited by the token's permissions". Staging CI uses only the bot account's scoped token, never a password.
+- **Verified:** on Free orgs, roles are Owner, Administrator or Developer. Project-scoped roles are Team/Enterprise only. [access control](https://supabase.com/docs/guides/platform/access-control)
+- **Verified:** Free projects get no automatic backups ("We automatically back up all Pro, Team, and Enterprise Plan projects"). Free users should export with `db dump`. [backups](https://supabase.com/docs/guides/platform/backups)
+
+## GitHub (CI, rulesets)
+- **Verified:** tag rulesets can restrict creations, updates and deletions of matching tags. Bypass actors are repository roles (admin, maintain, write), teams, GitHub Apps and Dependabot. `GITHUB_TOKEN` isn't listed as a bypass actor, so the staging tags are moved by a dedicated GitHub App. [rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository)
+- **Not documented:** whether repository admins bypass rulesets automatically. STAGING.md asks for a manual push test.
+- **Verified:** events triggered by `GITHUB_TOKEN` don't start new workflow runs (except `workflow_dispatch`/`repository_dispatch`). [GITHUB_TOKEN](https://docs.github.com/en/actions/concepts/security/github_token)
+- **Reported, not re-checked here:** scheduled workflows are disabled after 60 days without repository activity. The staging pinger is best effort for that reason.
+
+## Vercel (build)
+- **Verified:** `buildCommand` in `vercel.json` "overrides the Build Command in Project Settings", for every deployment of that commit. [vercel.json](https://vercel.com/docs/project-configuration/vercel-json)
+- **Verified:** `VERCEL_ENV` (production, preview or development), `VERCEL_GIT_COMMIT_SHA`, `VERCEL_GIT_REPO_OWNER` and `VERCEL_GIT_REPO_SLUG` are available at build time when system env vars are exposed. [system env vars](https://vercel.com/docs/environment-variables/system-environment-variables)
+- **Not documented:** clone depth and whether `.git` exists during builds. The preview guard fetches the tag itself and falls back to demo mode if git isn't usable.
 
 ## Platform behavior checked in round 3
 - **Verified (Supabase Realtime, private channels: Broadcast and Presence):** "Client access policies are cached for the duration of the connection." When access is revoked, a connected client "keep[s] receiving messages until their JWT expires or a new one is sent". **Postgres Changes is different:** it "authorizes every event against each subscriber" through RLS, except DELETE events, where "RLS policies are not applied". [postgres changes](https://supabase.com/docs/guides/realtime/postgres-changes). See DECISIONS D24. [authorization](https://supabase.com/docs/guides/realtime/authorization)
