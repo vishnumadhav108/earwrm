@@ -150,6 +150,11 @@ jobs:
       - name: Playwright
         run: npm run test:e2e
 
+      # Preview guard: a build with the guard on must act as the demo only, and neither the
+      # browser nor the Next.js server may reach Supabase (a local tripwire counts requests).
+      - name: Playwright (preview guard)
+        run: npm run test:e2e:guard
+
       - name: Upload Playwright report and traces
         if: failure()
         uses: actions/upload-artifact@v4
@@ -158,4 +163,30 @@ jobs:
           path: |
             playwright-report/
             test-results/
-          retention-days: 14
+            playwright-report-guard/
+            test-results-guard/
+          retention-days: 3
+
+  release-order:
+    # Always reports a status. Fails when a PR adds a migration together with anything
+    # outside the allowlist, or edits/deletes a merged migration. It can't prove the
+    # production migration was applied: that stays a manual PR checklist item.
+    name: Release order
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check release order
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            node scripts/ci/release-order.mjs "origin/${{ github.base_ref }}"
+          else
+            echo "[release-order] push to ${{ github.ref_name }}: nothing to compare (checked on the PR)."
+          fi
