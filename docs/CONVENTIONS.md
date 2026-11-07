@@ -26,6 +26,12 @@ Handoff 01 copies this into the repo's `CLAUDE.md`, under the existing `@AGENTS.
 - Every policy that shares data uses `can_view()`. Write a pgTAP test for each new policy.
 - Add an index for every query a screen runs. Check stats queries with `explain analyze` on seeded data at scale (see `supabase/seed/`).
 
+## Release order
+- **Schema changes ship as a migration-only PR** that stays compatible with the app that's currently deployed. Vishnu applies it to production by hand and verifies it there. Only then does the app PR that depends on it merge.
+- **Breaking changes use expand → transition → remove**, each its own release: add the new shape alongside the old one, move the app over, and remove the old shape only once nothing uses it.
+- **Optional features may fall back explicitly** (for example a kill switch reading its default). **Required reads and writes must fail visibly and safely** when the schema they need is missing. They never report success or silently drop data.
+- The CI check **Release order** fails a PR that adds a migration together with anything outside its allowlist (`supabase/tests/`, `supabase/fixtures/`, `supabase/seed.sql`, the generated `src/data/database.types.ts`, `docs/`, `tests/`), and any PR that edits, renames or deletes a merged migration. It can't prove the production migration was applied. That's the manual checklist item below.
+
 ## Tests (required for every PR)
 - **Unit (Vitest):** any logic in `src/lib` and `src/data`, plus import parsers and matching logic.
 - **pgTAP:** RLS policies and SQL functions.
@@ -38,6 +44,7 @@ Handoff 01 copies this into the repo's `CLAUDE.md`, under the existing `@AGENTS.
 - [ ] Demo mode works and has seed data for the new feature
 - [ ] The PR description lists: what changed, how it was tested, migrations to apply, env vars to add, and screenshots for UI changes
 - [ ] `docs/` updated if any architecture or decision changed
+- [ ] **Release order:** a migration PR is migration-only and compatible with the deployed app; an app PR that depends on a migration merges only after that migration was applied **and verified in production by hand** (say when and how)
 - [ ] **Migration check:** migrations apply to an empty database *and* to the prototype-shaped fixture. The PR says how to roll back, or why it can't be rolled back
 - [ ] **A user-visible acceptance test** (e2e) for the main behavior the PR adds
 - [ ] **Recovery note:** what to do if this breaks in production (kill switch, revert, restore), proportionate to the risk
