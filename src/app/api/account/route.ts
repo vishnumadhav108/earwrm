@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient as createSsrClient } from "@/lib/supabase/server";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/data/database.types";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 
@@ -27,9 +26,7 @@ export async function DELETE() {
     );
   }
 
-  const admin = createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
+  const admin = createAdminClient(serviceKey);
 
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) {

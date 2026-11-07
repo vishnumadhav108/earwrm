@@ -1,8 +1,10 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import type { Database } from "@/data/database.types";
+import { assertSupabaseAllowed } from "./guard";
 
 export async function createClient() {
+  assertSupabaseAllowed();
   const store = await cookies();
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

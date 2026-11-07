@@ -1,9 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import type { Database } from "@/data/database.types";
+import { guardAction, PREVIEW_GUARD } from "@/lib/supabase/guard";
 
 /** Refreshes the Supabase session cookie and gates the app behind /login. */
 export async function proxy(request: NextRequest) {
+  // Preview guard first: before any Supabase client or session-refresh code exists.
+  if (PREVIEW_GUARD) return previewGuardResponse(request);
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient<Database>(
@@ -46,6 +50,25 @@ export async function proxy(request: NextRequest) {
   }
 
   return response;
+}
+
+/**
+ * In a preview-guard build (migrations don't match staging) the app runs as the demo
+ * only: pages go to /demo, app APIs answer 503, and nothing creates a Supabase client.
+ */
+function previewGuardResponse(request: NextRequest) {
+  const action = guardAction(request.nextUrl.pathname);
+  if (action === "pass") return NextResponse.next({ request });
+  if (action === "unavailable") {
+    return NextResponse.json(
+      { error: "This preview runs in demo mode: its database migrations don't match staging." },
+      { status: 503, headers: { "x-earwrm-preview-guard": "demo" } },
+    );
+  }
+  const url = request.nextUrl.clone();
+  url.pathname = "/demo";
+  url.search = "";
+  return NextResponse.redirect(url, { headers: { "x-earwrm-preview-guard": "demo" } });
 }
 
 export const config = {

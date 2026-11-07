@@ -13,7 +13,6 @@ import { createClient } from "@/lib/supabase/client";
  */
 export default function LoginPage() {
   const router = useRouter();
-  const supabase = createClient();
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,6 +25,9 @@ export default function LoginPage() {
     setBusy(true);
     setError(null);
     try {
+      // Created on submit, not during render: the page is prerendered, and a preview-guard
+      // build refuses to create clients.
+      const supabase = createClient();
       if (mode === "in") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
