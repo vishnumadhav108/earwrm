@@ -47,7 +47,7 @@
 
 ## Tests
 - **Unit:** feature building, mean-centering, significance weighting, MMR, the explanation builder.
-- **Privacy tests:** a private rating never changes another user's recommendations or `item_neighbors`. A blocked user's activity never shows up.
+- **Privacy tests:** the RECOMMENDATIONS § 2 privacy tests: no disclosure, pair-level and list-level minimum support, exclusion, block (changed 2026-11-16, audit A-017). A blocked user's activity never shows up.
 - **Integration:** a full batch run against seeded local Supabase gives deterministic output.
 
 ## Acceptance criteria

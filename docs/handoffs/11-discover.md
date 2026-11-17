@@ -32,7 +32,7 @@
 ## Rules
 - Rankings come from SQL functions over `target_stats` and the activity data. Refresh them on a schedule (materialized views or tables updated every 15–60 min), never on each request.
 - Only public content shows up. Private accounts and blocked users are excluded.
-- Recommendation privacy follows RECOMMENDATIONS §2 exactly: private and followers-only data shapes only the owner's own recommendations.
+- Recommendation privacy follows RECOMMENDATIONS § 2 and D27. (Changed 2026-11-16, audit A-017.)
 - `item_neighbors` and user-similarity tables refresh nightly, built under D27: signals at any visibility (review text only as album-level blends, D27 §12), distinct-contributor support of k = 5 per item and per pair, attribution checked at read time, and blocks removing follower-based signals right away. Public **stats and popularity charts** (popular this week, highest rated, counts) stay public-only (D19). Personalized shelves and "Similar albums" may use shared models (D27 §3).
 - **Impressions:** a viewport-based impression logger (at least 50% visible for at least 500 ms, deduplicated impression ID, position, model version), plus click, queue and dismiss events tied to the impression. Dismissals expire unless the user chose "never".
 - **The privacy tests** from RECOMMENDATIONS §2 run in CI: no disclosure, pair-level and list-level minimum support, exclusion at the next build, block with pages already open, and text going private at the next build.
@@ -40,7 +40,7 @@
 - Each section has an empty state for a new install with little data. Demo mode seeds enough to fill every section.
 
 ## Tests
-- **pgTAP:** Bayesian ranking with fixed data; nothing private or from blocked users appears; a private rating never changes another user's For you results or `item_neighbors`.
+- **pgTAP:** Bayesian ranking with fixed data; nothing private or from blocked users appears; the RECOMMENDATIONS § 2 privacy tests: no disclosure, pair-level and list-level minimum support, exclusion, block. (Changed 2026-11-16, audit A-017.)
 - **Unit:** mean-centering, significance weighting, list lift, the explanation builder.
 - **Unit:** the new-release diff for each artist.
 - **E2E:** every section renders in demo mode; tapping through goes to album, list, review and profile pages.

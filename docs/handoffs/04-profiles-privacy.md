@@ -24,6 +24,8 @@
      - entries and reviews follow `privacy.diary`, each list and its items follow that list's own `visibility` (new lists start from `privacy.lists_default`), favorites follow `privacy.profile`
      - the owner always has full access
    - Grant anon `select` *only* on the tables that need it, with policies limiting it to public rows.
+   - **Scale seed:** create `supabase/seed/` with a script that loads 10k users and 1M diary entries into the local stack with one documented command, and use it for the benchmarks here and in 06a and 10a. (Added 2026-11-16, audit A-016.)
+   - **Existing users:** every profile with `settings.privateDiary = true` gets `privacy.diary = 'private'` (D32). pgTAP: such a user's review is invisible to anon and to a stranger after the migration. (Added 2026-11-16, audit Q-05, A-006.)
 2. **Storage:** `avatars` and `banners` buckets. The user can only write under their own `user_id/` folder, and reads follow profile visibility. Resize on the client before upload (avatar 512², banner 1500×500), **and enforce maximum size and allowed MIME types in the bucket configuration on the server**, since browser resizing can be bypassed.
 3. **Edit profile** (from your own profile → Edit):
    - avatar and banner pickers with crop
@@ -37,11 +39,12 @@
 6. **Onboarding (first sign-in):**
    - Pick username → avatar (optional) → **main music service (Apple Music, Spotify or Other, stored as `profiles.main_service`)** → privacy defaults explained in one screen (with a "Change anytime" link) → done. Handoff 13 adds the optional badges card for Spotify users after this step.
    - Under 30 seconds. Every step but the username can be skipped.
+   - **Existing accounts** go through the username step on their next sign-in, and their profile stays non-public until they have picked one. New accounts get a neutral default username that isn't taken from their email (D31); change `handle_new_user()` accordingly, keeping AUD-01's collision handling. (Added 2026-11-16, audit Q-01, A-007.)
 7. **Your data:**
    - **Export:** Settings → Download my data gives a documented JSON and CSV export of diary entries, ratings, reviews, lists, favorites and the queue.
    - **Account deletion:** cascades across database rows, Storage objects (avatars, banners), import staging and overrides, notifications, cached pages, OG images, interaction events, the taste profile, personal recommendations and aggregate contributions. **Jobs queued before the deletion must not recreate data for the deleted user** (workers check that the user still exists). Recompute aggregates. Test it end to end with synthetic fixtures in staging.
 8. **Age policy:** decide the minimum age and the signup check in this handoff, because public profiles launch here and comments in 08. Document it in the Terms.
-9. **Legal pages:** the Privacy notice must cover everything in DECISIONS D27 §7: the activity collected, which visibilities influence others, the named service providers, retention, deletion, and the objection route with an owner and deadline. Publish a Privacy notice and Terms (drafts for Vishnu to review, clearly marked as not legal advice) before anything public launches. The privacy notice has to exist before handoff 07's import ships.
+9. **Legal pages:** the Privacy notice must cover everything in DECISIONS D27 §7: the activity collected, which visibilities influence others, the named service providers, retention, deletion, and the objection route with an owner and deadline. It also names the other recipients of data: Internet Archive (cover images load straight from coverartarchive.org, so it sees the visitor's IP address), and MusicBrainz and Wikimedia (search terms and article titles, sent from earwrm's server). (Added 2026-11-16, audit A-026.) Publish a Privacy notice and Terms (drafts for Vishnu to review, clearly marked as not legal advice) before anything public launches. The privacy notice has to exist before handoff 07's import ships.
 10. **Storage recovery:** Supabase database backups **don't include Storage objects** (verified). Write down the decision for avatars and banners in `docs/RUNBOOK.md` (for example, a scheduled copy to a second bucket or an external store) and run one restore drill.
 11. **Realtime rule (D24):** set this pattern up now for 09 to use. Channels send a generic refresh signal only, the content is fetched through RLS, and the JWT expiry is short.
 12. **Demo mode:** a filled-out demo profile with a banner, links and showcase.

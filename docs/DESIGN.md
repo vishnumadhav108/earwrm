@@ -111,3 +111,9 @@ These are the current values, renamed to meaning-based tokens. The 40-step alpha
 - Every icon button gets an `aria-label`.
 - Stars are readable by screen readers ("4.5 out of 5").
 - Lighthouse Accessibility must stay at 95 or above, per handoff 03.
+
+Added 2026-11-16 (audit A-020):
+- Every input has a programmatic label.
+- Dialogs and sheets have a dialog role and name, move focus in, keep it inside, close on Escape and return focus.
+- Errors and "didn't save" messages are announced through a live region.
+- Nothing removes the focus outline without a visible `:focus-visible` replacement.
