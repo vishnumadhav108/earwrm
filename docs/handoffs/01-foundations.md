@@ -58,6 +58,7 @@ Right now there are no tests, no CI and no migration history. The schema is two 
     - turn on Dependabot for npm and GitHub Actions
 12. **Branch protection:** write `docs/STAGING.md` § "GitHub settings" for me, covering required CI checks on main and no direct pushes.
 13. **Runbook and restore drill:** start `docs/RUNBOOK.md`. Cover how to restore the database from a production backup, run that drill once, and record the date and result. Handoff 04 adds Storage.
+    - **Backup routine, done first.** Dump roles, schema and data from production into a local folder outside the repo that isn't synced to any cloud drive (for example `C:\earwrm-backups`), and keep an encrypted copy Vishnu controls. Do it before every production migration and once a month. Never upload a dump as a GitHub artifact: the repository is public. Write the exact commands into `docs/RUNBOOK.md`, and use the newest dump for the drill. (Added 2026-11-16, audit Q-03, A-004.)
     - **Restore target:** an isolated, disposable local Supabase stack, with its own `--workdir`, `project_id` and ports. **Never staging.**
     - **Nothing else running:** no app processes, no email delivery (mailpit excluded) and no background jobs (edge-runtime excluded) during the restore. Only Postgres runs, plus gotrue and storage-api if they're needed to create the `auth` and `storage` tables. Check that those schemas exist before restoring. Nothing is exposed.
     - **Procedure:** follow the documented backup/restore procedure for the pinned Supabase CLI (roles, schema and data dumps restored with `psql`).
@@ -70,6 +71,7 @@ Right now there are no tests, no CI and no migration history. The schema is two 
     - Write `docs/BILLING-SETUP.md`, a checklist for Vishnu covering:
       - spend headroom and projected month-end alerts
       - custom SMTP before real signups
+      - research $0 SMTP options and pick one; record limits and cost in COSTS.md. **Don't enable it in production until AUD-01, AUD-02 and AUD-08 are applied there**: the default SMTP is what currently keeps sign-up limited to organization members (audit § 8). (Added 2026-11-16, audit Q-06, A-025.)
     - which plan each service is on
     - Supabase Spend Cap status, and Vercel Spend Management plus Pause Production Deployments once on Pro
     - usage alerts

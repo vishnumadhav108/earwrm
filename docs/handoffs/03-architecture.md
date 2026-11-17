@@ -31,7 +31,7 @@ Right now the whole app is one page. `AppShell` keeps a stack of overlays in Rea
    - The rate and edit-log screen can be `/album/[mbid]/log`, or a sheet. Pick one and explain why in the plan.
    - Demo mode keeps working under `/demo/...` with the same routes. Pick the cleanest mechanism (a route segment, or a cookie plus provider) and explain it in the plan.
 2. **Data layer (`src/data/`):**
-   - Add TanStack Query. Make one module per domain: `entries`, `queue`, `lists`, `favorites`, `likes`, `releases`, `profile` and `settings`. Each exports typed query hooks and mutation hooks with the *current* optimistic and rollback behavior, including the release-FK wait (`ensureRelease`) and the error dialog.
+   - Add TanStack Query. Make one module per domain: `entries`, `queue`, `lists`, `favorites`, `likes`, `releases`, `profile` and `settings`. Each exports typed query hooks and mutation hooks with optimistic updates that (a) run one at a time per resource, in the order the user made them, (b) roll back by refetching that resource, never by restoring an older snapshot, and (c) do any write that touches two tables in one SQL function, so it can't half-succeed (changed 2026-11-16, audit A-005), including the release-FK wait (`ensureRelease`) and the error dialog.
    - Demo mode becomes an alternative adapter behind the same interface (in-memory), not `if (demo)` branches spread through the code.
    - Remove `src/lib/store.tsx` once nothing uses it.
    - Components never import Supabase.
@@ -41,6 +41,7 @@ Right now the whole app is one page. `AppShell` keeps a stack of overlays in Rea
    - It needs **two priority lanes**. `interactive` (search, release detail) always goes ahead of `background` (the enrichment jobs coming in 06). Background calls back off as soon as interactive traffic shows up.
    - Add a test proving that a full background queue doesn't slow down interactive search.
    - Put a Postgres-backed cache table in front of release detail too, so a cold lambda doesn't refetch it.
+   - Every upstream fetch (MusicBrainz, Wikidata, Wikipedia) has a timeout, and the limiter's queue has a maximum length; a full queue answers 503 quickly. (Added 2026-11-16, audit A-009.)
 5b. **Caching and cost (COSTS.md §3):**
     - public pages use ISR or edge caching with revalidation
     - add a robots.txt
@@ -50,11 +51,12 @@ Right now the whole app is one page. `AppShell` keeps a stack of overlays in Rea
     - **request limits:** maximum body size on every route handler, plus limits on pagination size and search query length
     - OG generation has bounded inputs and is cached
     - Realtime refetches are debounced and jittered on the client
+    - **Security headers:** a content security policy (covers from coverartarchive.org and the archive.org hosts it redirects to; the Supabase project URL for connections; no third-party scripts), `X-Content-Type-Options`, `Referrer-Policy` and frame-ancestors, set in `next.config.ts`, with an e2e test that an image from an unlisted host is blocked. (Added 2026-11-16, audit A-010.)
 6. **PWA basics:** manifest, icons, theme color, installable. Leave out offline support for now.
 7. **Design system (03c, following `docs/DESIGN.md`):**
    - **Fonts:** replace Archivo with the `geist` package: `geist/font/serif/regular` for display, plus `geist/font/sans` and `geist/font/mono`. Expose them as CSS variables. Check the current package exports first (v1.9.1 was checked). This also removes the build's dependency on Google Fonts.
    - **Tokens:** move the colors, type scale, radii, spacing and motion from DESIGN into CSS variables, plus a typed `theme.ts`. Merge the 40-step alpha ramp into the semantic tokens, and map every old use to its closest token. Add an ESLint rule (or a lint script) that flags raw hex or rgba colors and raw font sizes in components.
-   - **Primitives:** build the components DESIGN lists (Cover, Stars, Histogram, Button variants, Chip, Row variants, SectionHeader, Empty/Skeleton/Error states, Dialog, Sheet) in `src/components/ui`, and move every screen onto them. Use Geist Serif only at 20 px and up.
+   - **Primitives:** build the components DESIGN lists (Cover, Stars, Histogram, Button variants, Chip, Row variants, SectionHeader, Empty/Skeleton/Error states, Dialog, Sheet) in `src/components/ui`, and move every screen onto them. Use Geist Serif only at 20 px and up. Dialog and Sheet follow `docs/DESIGN.md` § Accessibility (dialog semantics, focus, Escape). (Added 2026-11-16, audit A-020.)
    - **Responsive shell:** keep the mobile layout and tab bar. Remove the fixed 402 px device-frame column on desktop, and add the desktop top nav and content column from DESIGN. Album and list pages get their two-column desktop layout here, using today's content.
    - **Album header backdrop:** a blurred and darkened version of the cover, fading into `bg`.
    - Add a **`/design` page**, a dev-only route that isn't linked anywhere, showing every token and primitive. Use it for visual review in the PR.
@@ -67,6 +69,7 @@ Right now the whole app is one page. `AppShell` keeps a stack of overlays in Rea
   - back button behavior
   - a demo deep link works
 - No component imports `@/lib/supabase`. Add an ESLint rule that enforces this.
+- An e2e test delays the first of two rating writes so it arrives second; after reload the second rating is shown. (Added 2026-11-16, audit A-005.)
 - Lighthouse mobile on `/demo`: Performance at least 90, Accessibility at least 95. Include the reports in the PR.
 - 03c: no raw colors or font sizes are left in components, Geist Serif never renders below 18 px, and `npm run build` works with no network access to Google Fonts.
 

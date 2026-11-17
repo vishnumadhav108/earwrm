@@ -1,75 +1,31 @@
-# 02: Bug fixes from the review
+# 02: Bug fixes from the review (index)
 
-**Branch:** `fix/review-pass`
 **Goal:** fix every finding below. Each fix comes with a test that fails before the fix and passes after.
-**Depends on:** 01 (test setup and migrations).
 
-## Rules
-- Make database changes in a new migration (`supabase migration new review_fixes`).
-- Don't refactor beyond what a fix needs. Handoff 03 does the restructuring.
-- For each item: write the failing test, fix it, then confirm the test passes.
+Split into four handoffs on 2026-11-16 (audit proposal P-2, `docs/audits/AUDIT_2026-11-16.md`), one session and one PR each. Run them in order: 02a, 02b, 02c, 02d. Item numbers 1–18 are unchanged; 19 and 20 were added on 2026-11-16.
 
-## Bugs
-1. **Drag-to-reorder writes on every step.** `useDragReorder` (`src/lib/gestures.ts`) calls `onPreview` on every swap. The callers (LogScreen queue, ListScreen, ProfileScreen favorites) pass persisting store actions, so each step sends an upsert, and requests arriving out of order can save an order from partway through the drag. The rollback is wrong too, because it takes `prev` from `dRef.current`, which is already the previewed order at commit time.
-   - **Fix:** preview only changes local state, commit persists once, and rollback restores the order from before the drag.
-   - **Tests:** a unit test of the reorder logic, plus an e2e test that drags and checks exactly one write.
-2. **Reordering favorites also opens the release.** Swallow the click after a drag. **Test:** e2e.
-3. **The splash can hang forever.** In the hydrate effect (`src/lib/store.tsx`), no session means an early return, and query errors are ignored, so `ready` never becomes true.
-   - **Fix:** no session sends the user to `/login`. A failed query shows an error screen with Retry, in the app's style.
-   - **Test:** e2e with a mocked failed request.
-4. **Hydrate loads the whole shared `releases` table.** PostgREST caps responses at 1,000 rows, so past that, diary rows show "Unknown release".
-   - **Fix:** add a SQL function `my_releases()` (security invoker) that returns only the releases this user references: entries, queue, likes, favorites and their list items.
-   - Page `entries` past 1,000 rows, and add a secondary sort on `created_at desc`.
-   - **Tests:** a pgTAP test for `my_releases()`, and a unit test for paging.
-5. **A failed stage-2 search wipes the results.** In `SearchScreen`, keep the stage-1 results when stage 2 fails, and only show the error when nothing loaded. **Test:** a unit/component test with mocked fetch.
-6. **Long-press on a search result fires while scrolling on touch screens.** Cancel the hold on `pointercancel` and when the pointer moves more than 8 px, in both `SearchScreen` and `useRowGestures.tapProps`. **Test:** unit test the hold logic.
-7. **Evening logs get tomorrow's date.** `TODAY()` uses UTC, and so does the database default for `logged_on`.
-   - **Fix:** use the local date, and send `logged_on` explicitly when the entry is first created. Edits keep the original date.
-   - **Test:** a unit test with a mocked clock at 11pm America/Chicago.
-8. **The Listened toggle deletes a rated or reviewed log without asking.** In `ActionSheet`, send that tap through the existing "Delete this entry?" dialog. An entry with no rating and no review still toggles instantly. **Test:** e2e.
-9. **List and favorite positions can collide.** `addToList` and `toggleFav` compute positions from the array length, and removing an item never renumbers the rest. **Fix:** renumber with ordinals on every add and remove. **Test:** unit + pgTAP ordering check.
-10. **Anyone signed in can overwrite cached release metadata.** Change `remember()` to `upsert(..., { onConflict: "id", ignoreDuplicates: true })`. Drop the `"refresh releases"` UPDATE policy and revoke UPDATE on releases from authenticated. **Test:** pgTAP shows UPDATE is denied.
-11. **`[mbid]` isn't validated.** `src/app/api/mb/release-group/[mbid]/route.ts` passes it to MusicBrainz as is. Reject anything that isn't a UUID with a 400. **Test:** a unit test on the route handler.
-    - **Confirmed in the fix/next-security smoke test (2026-11-05):** `GET /api/mb/release-group/not-a-uuid` spends a throttled MusicBrainz request and comes back **502** ("Lookup failed.") instead of being rejected locally. The test should assert that no MusicBrainz request is made for a non-UUID id.
-12. **No email confirmation callback.** Add `/auth/callback` (PKCE code exchange with `@supabase/ssr`), set `emailRedirectTo` on signUp, and check `src/proxy.ts`. **Test:** e2e with local Supabase (Inbucket/Mailpit catches the email).
-13. **No forgot-password flow.** Add a reset email plus a page for setting a new password. **Test:** e2e with local mail.
-14. **Settings account rows don't work.**
-    - Display name becomes editable.
-    - Username becomes editable, with a uniqueness check and a friendly error.
-    - Password opens the change-password flow.
-    - Email stays read-only, with no chevron.
-    - **Test:** e2e.
-15. **The Private diary and Weekly recap toggles do nothing.** Hide both until handoffs 04 and 10 make them real. **Test:** none needed.
-16. **The API roles have table privileges RLS can't control.** Found in the handoff 01 baseline (a read-only production dump, 2026-11-06), and copied into `20260831000000_baseline.sql` unchanged.
-    - **What production grants:**
-      - `anon` has `REFERENCES, TRIGGER, TRUNCATE, MAINTAIN` on every `public` table.
-      - `authenticated` has `ALL` on entries, queue, likes, favorites, lists and list_items. That's the intended `SELECT, INSERT, UPDATE, DELETE` plus the same four.
-      - On profiles and releases, `authenticated` has `SELECT, INSERT, UPDATE` plus the same four.
-      - The default privileges for `postgres` in `public` hand those four to anon, authenticated and service_role on every new table.
-    - **Why it matters:** RLS doesn't govern `TRUNCATE`, so these grants are the only thing between an API role and emptying a table. PostgREST doesn't expose `TRUNCATE` today, so nothing in the app can do it yet. The grants are still wider than intended (`002_grants.sql` meant anon to have nothing).
-    - **Fix:** a new migration that does three things:
-      - revokes `TRUNCATE, REFERENCES, TRIGGER, MAINTAIN` on all `public` tables from `anon` and `authenticated`;
-      - leaves `anon` with no table privileges;
-      - removes those four from the `postgres` default privileges in `public` for anon and authenticated.
-      - `service_role` keeps `ALL`, and the intended DML grants for `authenticated` stay.
-    - **Test:** pgTAP checks `has_table_privilege` for each API role, table and privilege. It also creates a scratch table to check that new tables get no default grants for anon or authenticated.
-17. **The release blurb is cut off after an initial such as "J. Cole".** Found while writing the handoff 01 unit tests (PR C).
-    - **What happens:** `firstSentence` (`src/lib/musicbrainz.ts`) splits on any `. ` followed by a capital, so "A record by J. Cole and friends." becomes "A record by J.". Its own comment says "J. Cole" shouldn't cut the sentence short.
-    - **Fix:** don't treat a period as a sentence end when the word before it is a single capital letter (an initial). Keep today's handling of "Vol. 2" and of real sentence ends ("…album. It was…").
-    - **Test:** `tests/unit/lib/musicbrainz.test.ts` already pins the bug as "KNOWN BUG: splits after a capitalised initial". Flip it to expect "A record by J. Cole and friends.", and add cases for a run of initials ("A. R. Rahman") and a real sentence end right after an initial-free word. The existing firstSentence tests must keep passing.
-18. **Swiping a list row with a mouse closes it straight away, so desktop users can't swipe-delete a list.** Found while writing the handoff 01 e2e tests (PR C).
-    - **What happens:**
-      - On the Lists tab (`src/components/screens/LogScreen.tsx`, the list row's `onClick`), the handler runs `if (g.swipeKey) return g.closeSwipe();`.
-      - With a mouse, releasing the button after a drag fires a click. That click closes the row the drag just opened, so the EDIT and DELETE actions are never reachable.
-      - Phones are unaffected, because browsers send no click after a touch swipe.
-      - Diary, queue and list-item rows don't have the bug: they use `useRowGestures().tapProps`, which ignores the click that follows a swipe (`suppressTap`).
-    - **Fix:** make the list row ignore the follow-up click the same way. Either route it through `tapProps`, or expose the suppression check from `useRowGestures` and use it. Don't change the touch behaviour.
-    - **Test:** an e2e test in `tests/e2e/` that opens the Lists tab on `/demo`, swipes a list row with the **mouse** (`page.mouse` down → move left more than 48 px → up), and asserts the row's DELETE action is clickable and opens "Delete this list?". It fails on `main` today. The existing touch-based e2e tests must keep passing.
+| Item | Bug | File |
+|---|---|---|
+| 1 | Drag-to-reorder writes on every step. | `02b-store-correctness.md` |
+| 2 | Reordering favorites also opens the release. | `02d-gestures-ui.md` |
+| 3 | The splash can hang forever. | `02b-store-correctness.md` |
+| 4 | Hydrate loads the whole shared `releases` table. | `02a-database-security.md` (database half), `02b-store-correctness.md` (app half) |
+| 5 | A failed stage-2 search wipes the results. | `02b-store-correctness.md` |
+| 6 | Long-press on a search result fires while scrolling on touch screens. | `02d-gestures-ui.md` |
+| 7 | Evening logs get tomorrow's date. | `02b-store-correctness.md` |
+| 8 | The Listened toggle deletes a rated or reviewed log without asking. | `02b-store-correctness.md` |
+| 9 | List and favorite positions can collide. | `02a-database-security.md` (database half), `02b-store-correctness.md` (app half) |
+| 10 | Anyone signed in can overwrite cached release metadata. | `02a-database-security.md` |
+| 11 | `[mbid]` isn't validated. | `02b-store-correctness.md` |
+| 12 | No email confirmation callback. | `02c-auth-flows.md` |
+| 13 | No forgot-password flow. | `02c-auth-flows.md` |
+| 14 | Settings account rows don't work. | `02c-auth-flows.md` |
+| 15 | The Private diary and Weekly recap toggles do nothing. | `02d-gestures-ui.md` |
+| 16 | The API roles have table privileges RLS can't control. | `02a-database-security.md` |
+| 17 | The release blurb is cut off after an initial such as "J. Cole". | `02d-gestures-ui.md` |
+| 18 | Swiping a list row with a mouse closes it straight away, so desktop users can't swipe-delete a list. | `02d-gestures-ui.md` |
+| 19 | User text has no upper bound in the database. | `02a-database-security.md` |
+| 20 | The password minimum is 6 in the app and 8 in production. | `02c-auth-flows.md` |
 
-## Acceptance criteria
-- Every item has a test that fails on `main` and passes on this branch. The PR description lists the test file for each item.
-- CI is green. Demo mode works.
+## After 02d merges
 - Manual pass on a real phone (or Chrome device emulation): reorder, search while scrolling, log after 6pm, and the delete confirmation.
-
-## PR
-A table of item # → fix → test. Include the migration to apply to production once staging looks right.

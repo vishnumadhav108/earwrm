@@ -192,3 +192,12 @@ Visibility controls who can **see** something, not whether it can anonymously im
 - **Images:** Cover Art Archive collages and covers by default. Apple Music artwork or Wikimedia Commons photos only after their terms are verified. Never Spotify images.
 - Following an artist (09) creates **new-release alerts**: a popup on the next app open with Listened already, Add to queue or Not now, plus an inbox notification and opt-in push. Detection is one shared daily MusicBrainz job per followed artist, never one per user.
 
+**D30. Only the server writes catalog rows.** *(2026-11-16. Audit Q-02, finding A-002.)*
+Clients never insert or update `releases` (later `release_groups`). A route handler validates the MBID, takes the row's fields from MusicBrainz, and writes with the service role.
+
+**D31. Usernames aren't derived from email addresses.** *(2026-11-16. Audit Q-01, finding A-007.)*
+New accounts get a neutral default. Before a profile can be public, its owner picks a username.
+
+**D32. The prototype's "Private diary" setting carries into the privacy model.** *(2026-11-16. Audit Q-05, finding A-006.)*
+A profile with `settings.privateDiary = true` starts with `privacy.diary = 'private'`.
+

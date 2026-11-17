@@ -2,14 +2,14 @@
 
 **Branch:** `docs/aud-06-drift`, one PR. Docs only.
 **Goal:** a fresh session, or a new contributor, can follow the docs without being sent to files that moved, a Node version the repo doesn't use, or a database it shouldn't touch. Fixes findings **A-018** and the documentation part of **A-019** in `docs/audits/AUDIT_2026-11-16.md`.
-**Depends on:** nothing. AUD-07 runs after this one because both edit `docs/handoffs/01-foundations.md` and `docs/README.md`.
+**Depends on:** nothing. AUD-07 ran first (Vishnu's decision, 2026-11-16): it changed tasks 13 and 15 of `docs/handoffs/01-foundations.md`, which this handoff doesn't touch, and it rewrote the run order in `docs/README.md`, so this handoff no longer edits that file.
 **Read:** `CLAUDE.md`, `docs/README.md`, `docs/STAGING.md`, audit findings A-018, A-019 and § 7 (Q-09).
 
 Writing this handoff did not authorize running it. Start in plan mode and show the plan first.
 
 ## Canonical files
 - **Reads:** root `README.md`, `docs/ARCHITECTURE.md`, `docs/EXTERNAL-SOURCES.md`, `docs/RUNBOOK.md`, `docs/STAGING.md`, `docs/handoffs/01-foundations.md`, `.nvmrc`, `package.json`, `next.config.ts`, `supabase/legacy/README.md`.
-- **Updates:** root `README.md`, `docs/README.md`, `docs/ARCHITECTURE.md`, `docs/EXTERNAL-SOURCES.md`, `docs/RUNBOOK.md`, `docs/STAGING.md`, `docs/handoffs/01-foundations.md` (two Node mentions only).
+- **Updates:** root `README.md`, `docs/ARCHITECTURE.md`, `docs/EXTERNAL-SOURCES.md`, `docs/RUNBOOK.md`, `docs/STAGING.md`, `docs/handoffs/01-foundations.md` (two Node mentions only).
 
 ## Starting-state checks
 Stop and report if any is not true.
@@ -27,6 +27,7 @@ Stop and report if any is not true.
 2. **Node 24, in docs and in the shell (Q-09).**
    - `docs/handoffs/01-foundations.md`: the two mentions of Node 26 (the "Local machine" line and the `.nvmrc` task) become Node 24, with a note "corrected 2026-11-16, audit A-018; the repo has pinned 24 since #17". Change nothing else in that file.
    - `docs/STAGING.md` § Local development: add a short "Node version" note. The repo needs Node 24 (`.nvmrc`). On this Windows machine a system-wide Node 26 at `C:\Program Files\nodejs` comes first on PATH unless fnm's environment is loaded in the shell, which is how the audit ran on 26. Give the fix for PowerShell and for Git Bash (loading fnm's environment from the shell profile; take the exact lines from fnm's current docs, don't write them from memory) and the fallback for a shell that can't load a profile: `fnm exec --using=24 <command>`.
+   - **The fix must cover `npm`, not only `node`.** In Git Bash, `fnm exec --using=24 npm run format:check` failed ("the program npm does not exist or is not available in PATH") while `fnm exec --using=24 node -v` printed `v24.22.2` (seen 2026-11-16 while running AUD-07). Whatever the note recommends has to make `npm` and `npx` run under Node 24 in both shells, and the verify step below must check `npm -v` works as well as `node -v`.
    - **Verify:** in a new PowerShell window and a new Git Bash window, from the repo root, `node -v` prints `v24.` (proposed, not run). In a shell without the profile, `fnm exec --using=24 node -v` prints `v24.` (run during the audit on 2026-11-16: printed `v24.22.2`, while plain `node -v` in the same shell printed `v26.13.0`). If either still prints v26, the profile line isn't being loaded: stop and tell Vishnu, who decides whether to remove the system-wide install.
 3. **`docs/ARCHITECTURE.md`.** "handoffs 01–12" becomes "01–13". In § 2, say staging migration runs only when `STAGING_ENABLED` is true. In § 8, mark Sentry and the restore drill as arriving in handoff 01 PR D2. No other edits.
 4. **`docs/RUNBOOK.md`: new section "Production migration state".** A table of every file in `supabase/migrations/` with its state in production and how that is known. As of 2026-11-16: baseline marked applied by a manual `migration repair`; `keep_alive` applied; `feature_flags` **not applied**, approved to go out with the next production push (audit Q-08). Add the rule: update this table in the same PR description step that records a production apply.
@@ -37,8 +38,7 @@ Stop and report if any is not true.
    - Wikimedia APIs: 200 requests a minute for unauthenticated clients with a compliant User-Agent, 10 a minute without; "new in 2026 and are subject to experimentation and change".
    - Supabase Free: projects pause after low activity over 7 days and can be restored for up to 1 year.
    Re-open each page before writing; if one has changed, write what it says now and note the difference.
-6. **`docs/README.md`.** Under the order table, add one line pointing to `docs/audits/AUDIT_2026-11-16.md` for the audit handoffs and where they sit in the order. Don't edit the table (AUD-07 does).
-7. **Record, don't fix.** In the PR description, list what you saw but left alone: the unused template SVGs in `public/`, the missing LICENSE file, and the stale references in `CLAUDE.md` (`src/components/ui`, `supabase/seed/`). They belong to handoffs 03, Vishnu and 01b.
+6. **Record, don't fix.** In the PR description, list what you saw but left alone: the unused template SVGs in `public/`, the missing LICENSE file, and the stale references in `CLAUDE.md` (`src/components/ui`, `supabase/seed/`). They belong to handoffs 03, Vishnu and 01b.
 
 ## Tests
 None; docs only. `npm run format:check` must still exit 0 (Markdown is excluded from Prettier, so this only proves nothing else changed).
