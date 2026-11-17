@@ -2,14 +2,14 @@
 
 **Branch:** `docs/aud-06-drift`, one PR. Docs only.
 **Goal:** a fresh session, or a new contributor, can follow the docs without being sent to files that moved, a Node version the repo doesn't use, or a database it shouldn't touch. Fixes findings **A-018** and the documentation part of **A-019** in `docs/audits/AUDIT_2026-11-16.md`.
-**Depends on:** nothing. AUD-07 runs after this one because both edit `docs/handoffs/01-foundations.md` and `docs/README.md`.
+**Depends on:** nothing. AUD-07 ran first (Vishnu's decision, 2026-11-16): it changed tasks 13 and 15 of `docs/handoffs/01-foundations.md`, which this handoff doesn't touch, and it rewrote the run order in `docs/README.md`, so this handoff no longer edits that file.
 **Read:** `CLAUDE.md`, `docs/README.md`, `docs/STAGING.md`, audit findings A-018, A-019 and § 7 (Q-09).
 
 Writing this handoff did not authorize running it. Start in plan mode and show the plan first.
 
 ## Canonical files
 - **Reads:** root `README.md`, `docs/ARCHITECTURE.md`, `docs/EXTERNAL-SOURCES.md`, `docs/RUNBOOK.md`, `docs/STAGING.md`, `docs/handoffs/01-foundations.md`, `.nvmrc`, `package.json`, `next.config.ts`, `supabase/legacy/README.md`.
-- **Updates:** root `README.md`, `docs/README.md`, `docs/ARCHITECTURE.md`, `docs/EXTERNAL-SOURCES.md`, `docs/RUNBOOK.md`, `docs/STAGING.md`, `docs/handoffs/01-foundations.md` (two Node mentions only).
+- **Updates:** root `README.md`, `docs/ARCHITECTURE.md`, `docs/EXTERNAL-SOURCES.md`, `docs/RUNBOOK.md`, `docs/STAGING.md`, `docs/handoffs/01-foundations.md` (two Node mentions only).
 
 ## Starting-state checks
 Stop and report if any is not true.
@@ -37,8 +37,7 @@ Stop and report if any is not true.
    - Wikimedia APIs: 200 requests a minute for unauthenticated clients with a compliant User-Agent, 10 a minute without; "new in 2026 and are subject to experimentation and change".
    - Supabase Free: projects pause after low activity over 7 days and can be restored for up to 1 year.
    Re-open each page before writing; if one has changed, write what it says now and note the difference.
-6. **`docs/README.md`.** Under the order table, add one line pointing to `docs/audits/AUDIT_2026-11-16.md` for the audit handoffs and where they sit in the order. Don't edit the table (AUD-07 does).
-7. **Record, don't fix.** In the PR description, list what you saw but left alone: the unused template SVGs in `public/`, the missing LICENSE file, and the stale references in `CLAUDE.md` (`src/components/ui`, `supabase/seed/`). They belong to handoffs 03, Vishnu and 01b.
+6. **Record, don't fix.** In the PR description, list what you saw but left alone: the unused template SVGs in `public/`, the missing LICENSE file, and the stale references in `CLAUDE.md` (`src/components/ui`, `supabase/seed/`). They belong to handoffs 03, Vishnu and 01b.
 
 ## Tests
 None; docs only. `npm run format:check` must still exit 0 (Markdown is excluded from Prettier, so this only proves nothing else changed).
